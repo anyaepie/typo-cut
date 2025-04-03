@@ -300,7 +300,7 @@ resultSection.updatePixels();
 ```
 This approach gives precise control over the masking process, though I suspect it introduces some pixelation issues that remain to be solved for crisper letter edges.
 
-## Responsible Vibe Coding Practices
+## AI-Assisted Development
 
 This is [p5js framework](https://p5js.org/) port from the original [Processing Java](https://processing.org/) code I've developed locally by combining several homework assignments from the course. 
 
