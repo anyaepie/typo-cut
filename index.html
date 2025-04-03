@@ -40,12 +40,14 @@
             display: flex;
             gap: 20px;
             align-items: center; /* Ensure vertical alignment */
+	    z-index: 3;
         }
         #about-link, #howto-link {
             cursor: pointer;
             color: #333;
             text-decoration: underline;
             white-space: nowrap; /* Prevent wrapping */
+	    z-index: 3;
         }
         #footer {
             position: absolute;
@@ -65,7 +67,7 @@
             color: #333;
             text-decoration: underline;
             margin: 0 10px;
-            z-index: 1;
+            z-index: 3;
         }
         #header-links {
             display: flex;
