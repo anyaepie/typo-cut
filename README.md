@@ -14,28 +14,21 @@ Check out my other creative coding projects at [mixedmeanings.lol/digital](https
 
 ## Inspiration
 
-This is [p5js framework](https://p5js.org/) port from the original [Processing Java](https://processing.org/) code I've developed locally by combining several homework assignments from the course. 
-
-I've used [Google Gemini 2.5 @ Google AI studio](https://aistudio.google.com) with 1M tokens [long context](https://cloud.google.com/vertex-ai/generative-ai/docs/long-context) to conduct the port from Processing Java into p5js. This model was used mainly because of the longest context window available at the market for free (ha-ha!) at that point of time and the fact that I was aiming mainly for syntaxis-only changes.
-
-NB! I've used "chain of thought"-like approach to work with Gemini:
-- asked the model to analyse the code and outline the code flow as it sees it and ask any questions that are not clear
-- confirmed the flow understanding from my side, asked how the code structure could look like, aiming for readability, [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) and clear "blast radius" for code changes, providing context that it's: a) a capstone project, b) some functionality is yet to be developed (with examples); c) the finar result will be hosted on GitHub Pages; d) I know nothing about front-end and not willing to invest in that now.
-- iterated on the code structure, and updated project documents and overall system prompts with the agreed context when was satisfied to bring the model to the final context
-- asked the model to start converting the code from Processing Java to P5JS as per agreed code structure, file by file, without changing any logic, just the syntaxis and provide me both the new code file and explanation of the changes introduced so I can monitor. My "rule of thumb" was to have 250 lines or less per file.
-
-I manually copied code files converted by the model to p5js.org to keep iterating on gui and file upload. Alternative option was to copy all files on github, sync the repo locally and use VSCode + Copilot to keep iterating, yet I really liked ability to quickly iterate (save-play-stop) available through web-intefrace on p5js.org.
-
-GUI is created using [lil-gui](https://lil-gui.georgealways.com/#) by [George Michael Brower](https://georgealways.com/).
-Website (index.html) is vibe-coded with Claude 3.7 as I'm an absolute noob when it comes to front-end.
-
 Notable [Coding Train](https://thecodingtrain.com/) tutorials leveraged in this project include:
 - [masking images](https://www.youtube.com/watch?v=V-8FE_IQONY)
 - [uploading images](https://www.youtube.com/watch?v=rO6M5hj0V-o)
 - [hosting p5js on github pages](https://www.youtube.com/watch?v=ZneWjyn18e8)
 - [instance mode](https://www.youtube.com/watch?v=Su792jEauZg) - after watching this video I decided not to go there :)
 
+GUI is created using [lil-gui](https://lil-gui.georgealways.com/#) by [George Michael Brower](https://georgealways.com/).
+
 ## Key Features
+
+<div align="center">
+    
+![Demo](quickdemo.gif)
+
+</div>
 
 The user can type their own text (note that there is a limit of characters dynamically calculated depending on the canvas size, letter size and spacing, line spacing). Direct cut-out is applied by default - the user can choose the inverted mask, when the letters are cut-out from underlying rectangles.
 
@@ -300,4 +293,22 @@ resultSection.updatePixels();
 ```
 This approach gives precise control over the masking process, though I suspect it introduces some pixelation issues that remain to be solved for crisper letter edges.
 
+## Responsible Vibe Coding Practices
 
+This is [p5js framework](https://p5js.org/) port from the original [Processing Java](https://processing.org/) code I've developed locally by combining several homework assignments from the course. 
+
+I've used [Google Gemini 2.5 @ Google AI studio](https://aistudio.google.com) with 1M tokens [long context](https://cloud.google.com/vertex-ai/generative-ai/docs/long-context) to conduct the port from Processing Java into p5js. This model was used mainly because of the longest context window available at the market for free (ha-ha!) at that point of time and the fact that I was aiming mainly for syntaxis-only changes.
+
+NB! I've used "chain of thought"-like approach to work with Gemini:
+- asked the model to analyse the code and outline the code flow as it sees it and ask any questions that are not clear
+- confirmed the flow understanding from my side, asked how the code structure could look like, aiming for readability, [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) and clear "blast radius" for code changes, providing context that it's: a) a capstone project, b) some functionality is yet to be developed (with examples); c) the finar result will be hosted on GitHub Pages; d) I know nothing about front-end and not willing to invest in that now.
+- iterated on the code structure, and updated project documents and overall system prompts with the agreed context when was satisfied to bring the model to the final context
+- asked the model to start converting the code from Processing Java to P5JS as per agreed code structure, file by file, without changing any logic, just the syntaxis and provide me both the new code file and explanation of the changes introduced so I can monitor. My "rule of thumb" was to have 250 lines or less per file.
+
+I manually copied code files converted by the model to p5js.org to keep iterating on gui and file upload. Alternative option was to copy all files on github, sync the repo locally and use VSCode + Copilot to keep iterating, yet I really liked ability to quickly iterate (save-play-stop) available through web-intefrace on p5js.org.
+
+Website (index.html) is responsibly (?) vibe-coded with Claude 3.7 (and cross evaluated with Gemini) as I'm an absolute noob when it comes to front-end.
+
+## Contacts
+
+You can contact me on [LinkedIn](https://www.linkedin.com/in/epanya/) or through the [contacts form on my website](https://www.mixedmeanings.lol/contact)
