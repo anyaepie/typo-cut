@@ -6,7 +6,7 @@ Typocut is an interactive tool that mixes collages, typography and randomness. B
 
 Created as a capstone project for the [Werkstatt Creative Coding course](https://werkstatt.school/creative-coding), Typocut explores how analogue could be emulated by digital and then converted back to analogue.
 
-Try it at [typocut.online](typocut.online)
+Try it at [typocut.online](https://typocut.online)
 (if this one doesn't work, try the direct one at [https://anyaepie.github.io/typo-cut/](https://anyaepie.github.io/typo-cut/)) 
 
 Each letter is a canvas, randomly cropped from configurable gradients or uploaded images, with adjustable noise and style parameters. Letters are built using strict 3x3 grid with primitives (rectange, triangle, cut-out rectangles, half-circles) that are flipped and rotated as needed - all with noise applied, combining pixel and parametric fonts.
