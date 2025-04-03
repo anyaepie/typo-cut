@@ -143,16 +143,57 @@
         .close-modal:hover {
             color: #000;
         }
+        
+        /* Decorative shapes styles */
+        .decorative-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1; /* Above background, below content */
+        }
+        .decorative-shape {
+            position: absolute;
+            box-shadow: none;
+            border: none;
+        }
+        .half-circle {
+            width: 60px;
+            height: 30px;
+            border-radius: 60px 60px 0 0;
+        }
+        .triangle {
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
     </style>
 </head>
 <body>
-   <div id="header">
-    <img src="siteheaderfull.png" alt="Typocut" style="height: 50px; object-fit: contain;">
-    <div id="header-links">
-        <div id="howto-link">How-to</div>
-        <div id="about-link">About</div>
+    <!-- Decorative shapes -->
+    <div class="decorative-elements">
+        <!-- Half circles with various rotations -->
+        <div class="decorative-shape half-circle" style="background-color: #d3f11e; top: 120px; left: 180px; transform: rotate(180deg);"></div>
+        <div class="decorative-shape half-circle" style="background-color: #0267A2; bottom: 180px; left: 460px; transform: rotate(45deg);"></div>
+        <div class="decorative-shape half-circle" style="background-color: #000000; top: 210px; right: 400px; transform: rotate(-30deg);"></div>
+        <div class="decorative-shape half-circle" style="background-color: #ffadcf; top: 85px; right: 120px; width: 30px; height: 15px; transform: rotate(90deg);"></div>
+
+        <!-- Triangles with various rotations -->
+        <div class="decorative-shape triangle" style="border-width: 0 20px 30px 20px; border-color: transparent transparent #B42D2D transparent; bottom: 150px; left: 520px; transform: rotate(15deg);"></div>
+        <div class="decorative-shape triangle" style="border-width: 0 20px 30px 20px; border-color: transparent transparent #ffadcf transparent; bottom: 220px; left: 580px; transform: rotate(-20deg);"></div>
+        <div class="decorative-shape triangle" style="border-width: 0 0 40px 40px; border-color: transparent transparent #d3f11e transparent; bottom: 100px; right: 120px; transform: rotate(120deg);"></div>
+        <div class="decorative-shape triangle" style="border-width: 0 20px 30px 20px; border-color: transparent transparent #0267A2 transparent; bottom: 190px; left: 180px; transform: rotate(60deg);"></div>
     </div>
-</div>
+
+    <div id="header">
+        <img src="siteheaderfull.png" alt="Typocut" style="height: 50px; object-fit: contain;">
+        <div id="header-links">
+            <div id="howto-link">How-to</div>
+            <div id="about-link">About</div>
+        </div>
+    </div>
 
     <div id="howto-modal" class="modal">
         <div id="howto-modal-content" class="modal-content">
@@ -177,12 +218,12 @@
         </div>
     </div>  
   
-<div id="about-modal" class="modal">
+    <div id="about-modal" class="modal">
         <div id="about-modal-content" class="modal-content">
             <span id="close-about-modal" class="close-modal">&times;</span>
             <h2>About</h2>
             <p>Typocut is an interactive tool that mixes collages, typography and randomness.</p>
-	    <p>Born from a passion for collage and creative coding, it produces typographic designs with noise, randomized image masking and configurable gradients.</p>
+	        <p>Born from a passion for collage and creative coding, it produces typographic designs with noise, randomized image masking and configurable gradients.</p>
             <p>Each letter is a canvas, randomly cropped from configurable gradients or uploaded images, with adjustable size & noise and style parameters.</p>
             <p>Letters are built using strict 3x3 grid with primitives (rectange, triangle, cut-out rectangles, half-circles) that are flipped & rotated and distorted with noise, combining pixel and parametric fonts feel.</p>
             <p></p>
@@ -205,7 +246,6 @@
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     </style>
-
 
     <div class="app-container">
         <div id="canvas-container"></div>
