@@ -48,6 +48,7 @@ A4 alphabet sheet can be previewed and saved separately, with letter configurati
 ## Architecture Overview
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#ff0000', 'secondaryColor': '#ffffff', 'tertiaryColor': '#ffffff' }}}%%
 graph LR
     Setup[Setup Canvas] --> GUI[Initialize GUI] --> Images[Load/Generate Images] --> Letters[Create Letter Objects] --> Draw[Draw to Canvas]
     User[User Interaction] --> |Text/Parameters| GUI
@@ -65,6 +66,7 @@ graph LR
 Typocut is built with p5.js (single sketch - for multiple sketches running in parallel you can explore "instance mode", but I didn't) and follows a modular design pattern, here are the modules at a glance:
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#ff0000', 'secondaryColor': '#ffffff', 'tertiaryColor': '#ffffff' }}}%%
 graph TB
     %% Core Components
     subgraph Core[Core Components]
@@ -119,11 +121,12 @@ graph TB
     FileHandling --> ImgHandling
     LetterManage --> Sticker
 
-    classDef core fill:#f9d5e5,stroke:#333,stroke-width:1px;
-    classDef image fill:#eeeeee,stroke:#333,stroke-width:1px;
-    classDef letter fill:#d3f0ee,stroke:#333,stroke-width:1px;
-    classDef ui fill:#d5f5e3,stroke:#333,stroke-width:1px;
-    classDef export fill:#fdebd0,stroke:#333,stroke-width:1px;
+    classDef core fill:#f9d5e5,stroke:#000000,stroke-width:1px,color:#000000;
+    classDef image fill:#e6f2ff,stroke:#000000,stroke-width:1px,color:#000000;
+    classDef letter fill:#d3f0ee,stroke:#000000,stroke-width:1px,color:#000000;
+    classDef ui fill:#d5f5e3,stroke:#000000,stroke-width:1px,color:#000000;
+    classDef export fill:#fdebd0,stroke:#000000,stroke-width:1px,color:#000000;
+    classDef default fill:#ffffff,stroke:#000000,stroke-width:1px,color:#000000;
 
     class Constants,CoreFunctions,Sketch,Core core;
     class ImgHandling,FileHandling,Gradients,ProcessUploads,FileInput,SaveOutput,Image image;
