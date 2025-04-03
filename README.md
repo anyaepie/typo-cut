@@ -30,13 +30,13 @@ GUI is created using [lil-gui](https://lil-gui.georgealways.com/#) by [George Mi
 
 </div>
 
-The user can type their own text (note that there is a limit of characters dynamically calculated depending on the canvas size, letter size and spacing, line spacing). Direct cut-out is applied by default - the user can choose the inverted mask, when the letters are cut-out from underlying rectangles.
+The user can type their own text (note the dynamically calculated character limit depending on the canvas size, letter size and line spacing). Direct cut-out is applied by default, yet the user can choose the inverted mask, when the letters are cut-out from the underlying rectangles.
 
 Letters can be repositioned with a mouse and saved as transparent PNG.
 
 Cutting out letters from the gradients is a default option, gradients could be configured in the GUI. To use custom images, the user needs to upload the images first (not more than 15, JPG, JPEG, PNG each less than 2MB) and chose "Uploaded Images" in the dropdown menu.
 
-A4 alphabet sheet can be previewed and saved separately, with letter configuration picked up from the main screen, yet the letter sequence is defined based on the standard frequency distribution for the English alphabet. This transparent PNG could be later printed out to be used for analogue collages.
+A4 alphabet sheet can be previewed and saved as PNG separately, with letter configuration picked up from the main screen. The alphabet letter quantities are defined based on the standard frequency distribution for the English alphabet ([wiki](https://en.wikipedia.org/wiki/Letter_frequency)). Saved transparent PNG could be used to print out the sticker sheet.
 
 ## Architecture Overview
 
@@ -203,7 +203,7 @@ function drawLetterWithMask(char, x, y, cw, ch, imageIndex, imageSectionPos, inv
 
 ### Hidden File Upload Implementation
 
-I didn't like the system upload file button as it was ruining my fantasy, really. Based on one of the videos referenced above, a hidden file input element is triggered by a (nicely looking) GUI button, providing a seamless user experience while maintaining full control over the upload process:
+I didn't like  the look of the system upload file button, so a hidden file input element is triggered by a (nicely looking) GUI button, providing a seamless user experience while maintaining full control over the upload process:
 
 ```javascript
 // From FileHandling.js
@@ -226,9 +226,14 @@ function setupFileInput() {
 
 ### Primitive Drawing Reuse
 
-When prototyping, I've initially just wrote all primitive drawing functions as independent, yet after refactored into four patterns (half-arc, rectangle, rectangle with a triangle cut-out, rectangle with a half-arc cut-out, traingle) - all rotated and flipped as needed. As generally letter width and height are independent, I switch lenght and width for rectangles with the half-circle cut-out if needed. Additionally, calculations for all the primitives aim to make outer dimensions of the primitives bigger/smaller without impacting the inner pars to avoid holes (I didn't like that effect).
+Overall, each letter is defined by a sequence of the predefined codes in a 3×3 grid, allowing for complex letter shapes with minimal definition data. 
 
-Overall, each letter is defined by a sequence of these codes in a 3×3 grid, allowing for complex letter shapes with minimal definition data. Many primitives reuse the same drawing functions with different parameters to maximize code efficiency:
+When prototyping, I initially wrote all primitive drawing functions independently, yet after refactored into four patterns (half-arc, rectangle, rectangle with a triangle cut-out, rectangle with a half-arc cut-out, traingle). Functions intake rotation, noise (defined globally, per letter), flipping.
+
+As letter's width and height are independent, I switch length and width for rectangles with the half-circle cut-out, if they are rotated 90 degrees. 
+Noise calculations for all the primitives aim to make outer dimensions of the primitives bigger/smaller without impacting the inner pars to avoid holes as I didn't like the effect.
+
+A simple broker function converts each letter definition into a relevant primitive drawing function:
 
 ```javascript
 // From LetterRendering.js
