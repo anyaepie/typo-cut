@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typocut p5.js</title>
+    <style>
+        html, body { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            display: flex; 
+            overflow: hidden; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; 
+            background-color: #ECF7FD; /* Light gray background */
+        }
+        .app-container {
+            display: flex;
+            height: calc(100% - 50px); /* Make room for header and footer */
+        }
+        #header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;  /* Increased padding */
+            background-color: #ECF7FD;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+        #header-links {
+            display: flex;
+            gap: 20px;
+            align-items: center; /* Ensure vertical alignment */
+        }
+        #about-link, #howto-link {
+            cursor: pointer;
+            color: #333;
+            text-decoration: underline;
+            white-space: nowrap; /* Prevent wrapping */
+        }
+        #footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ECF7FD;
+            font-size: 14px;
+            color: #666;
+        }
+        #footer a {
+            color: #333;
+            text-decoration: underline;
+            margin: 0 10px;
+        }
+        #header-links {
+            display: flex;
+            gap: 20px;
+        }
+        #about-link, #howto-link {
+            cursor: pointer;
+            color: #333;
+            text-decoration: underline;
+        }
+        #canvas-container {
+            flex-grow: 1;
+            position: relative;
+            background-color: white;
+            min-width: 0;
+            margin-top: 100px;
+            margin-left:10px;
+            margin-right:10px;
+        }
+        .sidebar {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            background-color: #ECF7FD;
+            margin-top: 100px;
+            margin-right:20px;
+        }
+        #gui-container {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+        .lil-gui { 
+            width: 100% !important; 
+	--background-color: #f6f6f6;
+	--text-color: #3d3d3d;
+	--title-background-color: #efefef;
+	--title-text-color: #3d3d3d;
+	--widget-color: #eaeaea;
+	--hover-color: #f0f0f0;
+	--focus-color: #fafafa;
+	--number-color: #3d3d3d;
+	--string-color: #3d3d3d;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 70%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-modal:hover {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+   <div id="header">
+    <img src="siteheaderfull.png" alt="Typocut" style="height: 50px; object-fit: contain;">
+    <div id="header-links">
+        <div id="howto-link">How-to</div>
+        <div id="about-link">About</div>
+    </div>
+</div>
+
+    <div id="howto-modal" class="modal">
+        <div id="howto-modal-content" class="modal-content">
+            <span id="close-howto-modal" class="close-modal">&times;</span>
+            <h2>How to Use</h2>
+            <p>Getting started with Typocut is easy:</p>
+            <ol>
+                <li>Type your text in the input field</li>
+                <li>Enjoy seamless line breaks for your text</li>
+                <li>Watch out for maximum possible text lenght at these letter sizes</li>
+                <li>Adjust letter size, spacing, and noise using GUI controls</li>
+                <li>Choose between gradient or uploaded images</li>
+                <li>Upload images to choose between gradients or uploaded images</li>
+                <li>Upload up to 15 images JPG, JPEG, PNG each less than 2MB</li>
+                <li>Reset images by re-uploading again</li>
+                <li>Check-out inverted mask to get reverse cutouts</li>
+                <li>Drag letters to reposition them and save as PNG</li>
+                <li>Generate, preview and save A4 alphabet stickers</li>
+                <li>A4 alphabet uses English alphabet letter frequencies</li>
+            </ol>
+            <p>Experiment with different settings to have fun!</p>
+        </div>
+    </div>  
+  
+<div id="about-modal" class="modal">
+        <div id="about-modal-content" class="modal-content">
+            <span id="close-about-modal" class="close-modal">&times;</span>
+            <h2>About</h2>
+            <p>Typocut mixes collage, typography and randomness.</p>
+            <p>Each letter is a canvas, randomly cropped from configurable gradients or uploaded images, with adjustable noise and style parameters.</p>
+            <p>Letters are built using strict 3x3 grid with primitives (rectange, triangle, cut-out rectangles, half-circles) that are flipped, rotated - all with noise applied, combining pixel and parametric fonts.</p>
+            <p>I've built it because like to have my own letters for my collages.</p>
+            <div class="about-illustration">
+                <img src="fontillustration.png" alt="Typocut Font Illustration" style="max-width: 100%; height: auto; display: block; margin: 20px auto;">
+            </div>
+        </div>
+    </div>
+
+    <style>
+    .about-illustration {
+        width: 100%;
+        margin-top: 20px;
+        text-align: center;
+    }
+    .modal-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    </style>
+
+
+    <div class="app-container">
+        <div id="canvas-container"></div>
+        <div class="sidebar">
+            <div id="gui-container"></div>
+            <div id="text-container"></div>
+        </div>
+    </div>
+
+    <div id="footer">
+        2025, created by Anya Epie | 
+        <a href="https://mixedmeanings.lol" target="_blank">mixedmeanings.lol</a> | 
+        <a href="https://github.com/anyaepie/typocut" target="_blank">Code on GitHub</a>
+    </div>
+
+    <!-- p5.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <!-- lil-gui library -->
+    <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.19"></script>
+
+    <!-- Constants and core dependencies -->
+    <script src="Constants.js"></script>
+    <script src="ImageHandling.js"></script>
+    <script src="LetterObject.js"></script>
+    <script src="LetterRendering.js"></script>
+    <script src="StickerSheet.js"></script>
+
+    <!-- Modular application files -->
+    <script src="CoreFunctions.js"></script>
+    <script src="FileHandling.js"></script>
+    <script src="GUI.js"></script>
+    <script src="InteractionHandlers.js"></script>
+    <script src="LetterManagement.js"></script>
+
+    <!-- Main sketch file -->
+    <script src="sketch.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const aboutLink = document.getElementById('about-link');
+            const aboutModal = document.getElementById('about-modal');
+            const closeAboutModal = document.getElementById('close-about-modal');
+
+            const howtoLink = document.getElementById('howto-link');
+            const howtoModal = document.getElementById('howto-modal');
+            const closeHowtoModal = document.getElementById('close-howto-modal');
+
+            function openModal(modal) {
+                modal.style.display = 'block';
+            }
+
+            function closeModal(modal) {
+                modal.style.display = 'none';
+            }
+
+            aboutLink.onclick = () => openModal(aboutModal);
+            closeAboutModal.onclick = () => closeModal(aboutModal);
+
+            howtoLink.onclick = () => openModal(howtoModal);
+            closeHowtoModal.onclick = () => closeModal(howtoModal);
+
+            window.onclick = (event) => {
+                if (event.target == aboutModal) closeModal(aboutModal);
+                if (event.target == howtoModal) closeModal(howtoModal);
+            }
+        });
+    </script>
+</body>
+</html>
