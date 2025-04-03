@@ -10,21 +10,24 @@ Created as a capstone project for [Werkstatt Creative Coding course](https://wer
 
 Each letter is a canvas, randomly cropped from configurable gradients or uploaded images, with adjustable noise and style parameters. Letters are built using strict 3x3 grid with primitives (rectange, triangle, cut-out rectangles, half-circles) that are flipped and rotated as needed - all with noise applied, combining pixel and parametric fonts.
 
-Check out my other creative art projects at [mixedmeanings.lol/digital](https://www.mixedmeanings.lol/digital).
+Check out my other creative coding projects at [mixedmeanings.lol/digital](https://www.mixedmeanings.lol/digital).
 
 ## Inspiration
 
-This is [P5JS framework](https://p5js.org/) port from the original Processing code I've worked on locally. I've used [Google Gemini 2.5 @ Google AI studio](https://aistudio.google.com) with 1M tokens [long context](https://cloud.google.com/vertex-ai/generative-ai/docs/long-context) to conduct the port from Processing Java into P5JS. This model was used mainly because of the longest context window available at the market for free and the fact that I was aiming mainly for syntaxis-only changes.
+This is [p5js framework](https://p5js.org/) port from the original [Processing Java](https://processing.org/) code I've developed locally by combining several homework assignments from the course. 
+
+I've used [Google Gemini 2.5 @ Google AI studio](https://aistudio.google.com) with 1M tokens [long context](https://cloud.google.com/vertex-ai/generative-ai/docs/long-context) to conduct the port from Processing Java into p5js. This model was used mainly because of the longest context window available at the market for free (ha-ha!) at that point of time and the fact that I was aiming mainly for syntaxis-only changes.
 
 NB! I've used "chain of thought"-like approach to work with Gemini:
 - asked the model to analyse the code and outline the code flow as it sees it and ask any questions that are not clear
-- confirmed flow understanding from my side, asked how the code structure could look like, aiming for readability, [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) and clear "blast radius" for code changes, providing context that it's a capstone project aimed to be hosted on GitHub Pages.
-- iterated on the code structure and updated project documents and overall system prompts with the agreed context
--  asked the model to start converting the code from Processing Java to P5JS as agreed code structure, file by file, without changing any logic, just the syntaxis and provide me both the new code file and explanation of the changes introduced so I can monitor
+- confirmed the flow understanding from my side, asked how the code structure could look like, aiming for readability, [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) and clear "blast radius" for code changes, providing context that it's: a) a capstone project, b) some functionality is yet to be developed (with examples); c) the finar result will be hosted on GitHub Pages; d) I know nothing about front-end and not willing to invest in that now.
+- iterated on the code structure, and updated project documents and overall system prompts with the agreed context when was satisfied to bring the model to the final context
+- asked the model to start converting the code from Processing Java to P5JS as per agreed code structure, file by file, without changing any logic, just the syntaxis and provide me both the new code file and explanation of the changes introduced so I can monitor. My "rule of thumb" was to have 250 lines or less per file.
 
-I manually copied code files converted by the model on p5js.org to keep iterating on gui and file upload. Alternative option was to copy all files on github, sync the repo locally and use VSCode to keep iterating, yet I really like ability to quickly iterate (save-play-stop) available through web-intefrace on p5js.org.
+I manually copied code files converted by the model to p5js.org to keep iterating on gui and file upload. Alternative option was to copy all files on github, sync the repo locally and use VSCode + Copilot to keep iterating, yet I really liked ability to quickly iterate (save-play-stop) available through web-intefrace on p5js.org.
 
-GUI is created using [lil-gui](https://lil-gui.georgealways.com/#) by [George Michael Brower](https://georgealways.com/)
+GUI is created using [lil-gui](https://lil-gui.georgealways.com/#) by [George Michael Brower](https://georgealways.com/).
+Website (index.html) is vibe-coded with Claude 3.7 as I'm an absolute noob when it comes to front-end.
 
 Notable [Coding Train](https://thecodingtrain.com/) tutorials leveraged in this project include:
 - [masking images](https://www.youtube.com/watch?v=V-8FE_IQONY)
