@@ -15,9 +15,17 @@ Check out my other creative art projects at [mixedmeanings.lol/digital](https://
 
 ## Inspiration
 
-[P5JS framework](https://p5js.org/) used to write the logic
+This is [P5JS framework](https://p5js.org/) port from the original Processing code I've worked on locally. I've used [Google Gemini 2.5 @ Google AI studio](https://aistudio.google.com) with 1M tokens [long context](https://cloud.google.com/vertex-ai/generative-ai/docs/long-context) to conduct the port from Processing Java into P5JS. This model was used mainly because of the longest context window available at the market for free and the fact that I was aiming mainly for syntaxis-only changes.
 
-GUI is created using [lil-gui](https://lil-gui.georgealways.com/#) by (George Michael Brower)[https://georgealways.com/]
+NB! I've used "chain of thought"-like approach to work with Gemini:
+- asked the model to analyse the code and outline the code flow as it sees it and ask any questions that are not clear
+- confirmed flow understanding from my side, asked how the code structure could look like, aiming for readability, [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) and clear "blast radius" for code changes, providing context that it's a capstone project aimed to be hosted on GitHub Pages.
+- iterated on the code structure and updated project documents and overall system prompts with the agreed context
+-  asked the model to start converting the code from Processing Java to P5JS as agreed code structure, file by file, without changing any logic, just the syntaxis and provide me both the new code file and explanation of the changes introduced so I can monitor
+
+I manually copied code files converted by the model on p5js.org to keep iterating on gui and file upload. Alternative option was to copy all files on github, sync the repo locally and use VSCode to keep iterating, yet I really like ability to quickly iterate (save-play-stop) available through web-intefrace on p5js.org.
+
+GUI is created using [lil-gui](https://lil-gui.georgealways.com/#) by [George Michael Brower](https://georgealways.com/)
 
 Notable [Coding Train](https://thecodingtrain.com/) tutorials leveraged in this project include:
 - [masking images](https://www.youtube.com/watch?v=V-8FE_IQONY)
