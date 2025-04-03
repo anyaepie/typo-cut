@@ -1,8 +1,9 @@
 # Typocut: Generative Typography Tool
 
 Typocut is an interactive tool that mixes collages, typography and randomness. Born from a passion for collage and creative coding, it produces typographic designs with noise, randomized image masking and configurable gradients. 
+
 Try it at [typocut.online](https://typocut.online)
-(if this one doesn't work, try the direct one at [https://anyaepie.github.io/typo-cut/](https://anyaepie.github.io/typo-cut/)) 
+(or [https://anyaepie.github.io/typo-cut/](https://anyaepie.github.io/typo-cut/)) 
 
 ![Interface](og-image.png)
 
@@ -10,7 +11,7 @@ Created as a capstone project for [Werkstatt Creative Coding course](https://wer
 
 Each letter is a canvas, randomly cropped from configurable gradients or uploaded images, with adjustable noise and style parameters. Letters are built using strict 3x3 grid with primitives (rectange, triangle, cut-out rectangles, half-circles) that are flipped and rotated as needed - all with noise applied, combining pixel and parametric fonts.
 
-Check out my other creative coding projects at [mixedmeanings.lol/digital](https://www.mixedmeanings.lol/digital).
+Check out additional details about the process [here](https://www.mixedmeanings.lol/digital/typo-cut) and my other creative coding projects at [mixedmeanings.lol/digital](https://www.mixedmeanings.lol/digital).
 
 ## Inspiration
 
