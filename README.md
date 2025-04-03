@@ -4,10 +4,12 @@
 
 Typocut is an interactive tool that mixes collages, typography and randomness. Born from a passion for collage and creative coding, it creates typographic designs with noise, randomized image masking and configurable gradients. 
 
-Created as a capstone project for the [Werkstatt Creative Coding course](https://werkstatt.school/creative-coding), Typocut explores how analogue could be emulated by digital and then converted back to analogue.
+Created as a capstone project for [Werkstatt Creative Coding course](https://werkstatt.school/creative-coding), Typocut explores how analogue could be emulated by digital and then converted back to analogue.
 
 Try it at [typocut.online](https://typocut.online)
 (if this one doesn't work, try the direct one at [https://anyaepie.github.io/typo-cut/](https://anyaepie.github.io/typo-cut/)) 
+
+![Interface](og-image.png)
 
 Each letter is a canvas, randomly cropped from configurable gradients or uploaded images, with adjustable noise and style parameters. Letters are built using strict 3x3 grid with primitives (rectange, triangle, cut-out rectangles, half-circles) that are flipped and rotated as needed - all with noise applied, combining pixel and parametric fonts.
 
@@ -189,5 +191,25 @@ function generateLetterSequence(maxLetters) {
     return sequence.substring(0, maxLetters);
 }
 ```
+
+## What is not working as I want it to - Crisp Cut-outs
+
+As of now, I haven't been able to resolve the issues with how standart mask() function is applied (copy to copy), so I'm using direct pixel manipulation which most likely creates fuzzy corners (and I don't like it!):
+```javascript
+// From LetterRendering.js
+// Apply Manual Mask via Pixel Manipulation
+letterMask.loadPixels();
+resultSection.loadPixels();
+
+for (let i = 0; i < letterMask.pixels.length; i += 4) {
+    let maskValue = letterMask.pixels[i]; // Mask brightness (0 or 255)
+    resultSection.pixels[i]     = imgSection.pixels[i];
+    resultSection.pixels[i + 1] = imgSection.pixels[i + 1];
+    resultSection.pixels[i + 2] = imgSection.pixels[i + 2];
+    resultSection.pixels[i + 3] = maskValue; // Alpha from mask
+}
+resultSection.updatePixels();
+```
+This approach gives precise control over the masking process, though I suspect it introduces some pixelation issues that remain to be solved for crisper letter edges.
 
 
