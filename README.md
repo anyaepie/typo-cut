@@ -28,6 +28,8 @@ GUI is created using [lil-gui](https://lil-gui.georgealways.com/#) by [George Mi
     
 ![Demo](quickdemo.gif)
 
+*(quick demo gif - click on the file to watch the animation if not working automatically)*
+
 </div>
 
 The user can type their own text (note the dynamically calculated character limit depending on the canvas size, letter size and line spacing). Direct cut-out is applied by default, yet the user can choose the inverted mask, when the letters are cut-out from the underlying rectangles.
