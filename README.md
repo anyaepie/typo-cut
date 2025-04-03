@@ -1,15 +1,12 @@
 # Typocut: Generative Typography Tool
 
-## About
-
-Typocut is an interactive tool that mixes collages, typography and randomness. Born from a passion for collage and creative coding, it creates typographic designs with noise, randomized image masking and configurable gradients. 
-
-Created as a capstone project for [Werkstatt Creative Coding course](https://werkstatt.school/creative-coding), Typocut explores how analogue could be emulated by digital and then converted back to analogue.
-
+Typocut is an interactive tool that mixes collages, typography and randomness. Born from a passion for collage and creative coding, it produces typographic designs with noise, randomized image masking and configurable gradients. 
 Try it at [typocut.online](https://typocut.online)
 (if this one doesn't work, try the direct one at [https://anyaepie.github.io/typo-cut/](https://anyaepie.github.io/typo-cut/)) 
 
 ![Interface](og-image.png)
+
+Created as a capstone project for [Werkstatt Creative Coding course](https://werkstatt.school/creative-coding), Typocut explores how analogue could be emulated by digital and then converted back to analogue.
 
 Each letter is a canvas, randomly cropped from configurable gradients or uploaded images, with adjustable noise and style parameters. Letters are built using strict 3x3 grid with primitives (rectange, triangle, cut-out rectangles, half-circles) that are flipped and rotated as needed - all with noise applied, combining pixel and parametric fonts.
 
@@ -47,7 +44,92 @@ A4 alphabet sheet can be previewed and saved separately, with letter configurati
 
 ## Architecture Overview
 
-Typocut is built with p5.js (single sketch - for multiple sketches running in parallel you can explore "instance mode", but I didn't) and follows a modular design pattern. Here's how the main components work together:
+```mermaid
+graph LR
+    Setup[Setup Canvas] --> GUI[Initialize GUI] --> Images[Load/Generate Images] --> Letters[Create Letter Objects] --> Draw[Draw to Canvas]
+    User[User Interaction] --> |Text/Parameters| GUI
+    User --> |Mouse/Keyboard| Letters
+    Draw --> Export[Export PNG/Sticker Sheet]
+    
+    classDef flow fill:#e8daef,stroke:#333,stroke-width:1px;
+    classDef user fill:#d5f5e3,stroke:#333,stroke-width:1px;
+    classDef output fill:#fdebd0,stroke:#333,stroke-width:1px;
+    
+    class Setup,GUI,Images,Letters,Draw flow;
+    class User user;
+    class Export output;
+```
+Typocut is built with p5.js (single sketch - for multiple sketches running in parallel you can explore "instance mode", but I didn't) and follows a modular design pattern, here are the modules at a glance:
+
+```mermaid
+graph TB
+    %% Core Components
+    subgraph Core[Core Components]
+        direction LR
+        Constants[Constants.js\nGlobal variables] -.-> CoreFunctions[CoreFunctions.js\nUtility functions]
+        Sketch[sketch.js\nInitialization & loop]
+    end
+    
+    %% Image Processing
+    subgraph Image[Image Handling]
+        direction TB
+        ImgHandling[ImageHandling.js] --> Gradients[Create gradients]
+        ImgHandling --> ProcessUploads[Process images]
+        FileHandling[FileHandling.js] --> FileInput[Hidden file input]
+        FileHandling --> SaveOutput[Save PNG]
+    end
+    
+    %% Letter Processing 
+    subgraph Letter[Letter Processing]
+        direction TB
+        LetterObj[LetterObject.js] --> Properties[Position & dimensions]
+        LetterRender[LetterRendering.js] --> LetterDef[Letter definitions]
+        LetterRender --> Masking[Pixel masking]
+        LetterManage[LetterManagement.js] --> Layout[Calculate layout]
+    end
+    
+    %% User Interaction
+    subgraph UI[User Interface]
+        direction TB
+        GUISetup[GUI.js] --> Controls[Parameter controls]
+        GUISetup --> SourceType[Image source toggle]
+        Interaction[InteractionHandlers.js] --> Mouse[Drag letters]
+    end
+    
+    %% Export Features
+    subgraph Export[Export Features]
+        direction TB
+        Sticker[StickerSheet.js] --> Distribution[Letter distribution]
+        Sticker --> SaveSheet[Save sticker sheet]
+    end
+    
+    %% Connections between components
+    Constants -.-> All[All modules]
+    Core --> Image
+    Core --> Letter
+    Core --> UI
+    Core --> Export
+    GUISetup --> ImgHandling
+    Interaction --> LetterManage
+    LetterObj --> LetterRender
+    ImgHandling --> LetterManage
+    FileHandling --> ImgHandling
+    LetterManage --> Sticker
+
+    classDef core fill:#f9d5e5,stroke:#333,stroke-width:1px;
+    classDef image fill:#eeeeee,stroke:#333,stroke-width:1px;
+    classDef letter fill:#d3f0ee,stroke:#333,stroke-width:1px;
+    classDef ui fill:#d5f5e3,stroke:#333,stroke-width:1px;
+    classDef export fill:#fdebd0,stroke:#333,stroke-width:1px;
+
+    class Constants,CoreFunctions,Sketch,Core core;
+    class ImgHandling,FileHandling,Gradients,ProcessUploads,FileInput,SaveOutput,Image image;
+    class LetterObj,LetterRender,LetterManage,Properties,LetterDef,Masking,Layout,Letter letter;
+    class GUISetup,Interaction,Controls,SourceType,Mouse,UI ui;
+    class Sticker,Distribution,SaveSheet,Export export;
+
+```
+Here's how the main components work together:
 
 ### Core Files
 
