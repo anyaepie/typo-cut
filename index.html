@@ -175,12 +175,20 @@
             height: 0;
             border-style: solid;
         }
+	 .decorative-elements img {
+            position: absolute;
+            pointer-events: none;
+        }   
     </style>
 </head>
 <body>
     <!-- Decorative shapes -->
     <div class="decorative-elements">
-        <!-- Half circles with various rotations -->
+        
+	<!-- Secret Eye Image -->
+        <img src="secreteye.png" alt="" class="decorative-shape" style="bottom: 100px; right: 100px; z-index: 1;">
+	
+	<!-- Half circles with various rotations -->
         <div class="decorative-shape half-circle" style="background-color: #d3f11e; top: 95px; left: 10px; transform: rotate(260deg);"></div>
         <div class="decorative-shape half-circle" style="background-color: #0267A2; bottom: 30px; left: 400px; transform: rotate(40deg);"></div>
         <div class="decorative-shape half-circle" style="background-color: #000000; top: 15px; left: 400px; width: 10px; height: 5px; transform: rotate(-25deg);"></div>
