@@ -16,9 +16,9 @@ class LetterObject {
         this.cellHeight = ch;
         this.imageIndex = imgIndex;
         
-        // This is a legacy attribute - I've experimented with letters in one of the assignments
-        // and stored a unique noise seed for each letter, but in this code I define noise globally and calculate
-        // distortion at primitives level relative to their size - it's just looks nicer
+        // This is how I solved trembling letters. Each letter get a random seed assigned
+        // When random is called for drawing primitives, this seed is being used
+        // So the letters are re-drawn as they were, cool, right?
         this.noiseSeed = floor(random(1000000));
         
         this.imageSectionPos = [0, 0]; // Stores [x, y] for image crop
