@@ -2,7 +2,8 @@
 // Uses modular functions from separate files
 
 function preload() {
-    // Preload is empty - we'll handle images through the GUI
+    // Preload is empty - we now handle images through the GUI
+    // left for legacy reasons as I had it before
 }
 
 function setup() {
@@ -48,10 +49,12 @@ function setup() {
     updateLetterObjects();
 
     // Set default text properties
+    // This is legacy now as I don't have any text outputted
     textSize(12);
     fill(0);
     textAlign(LEFT, BASELINE);
     strokeWeight(1);
+    //This is still not legacy
     imageMode(CORNER);
 
     // Force a redraw to ensure content is visible
