@@ -1,6 +1,6 @@
 // File handling functions for Typocut
 
-// Function to create or get the hidden file input element
+// Function to create or get the hidden file input element (reset every time when a bunch of images is uploaded)
 function setupFileInput() {
   // Remove any existing file input
   if (fileInputElement) {
