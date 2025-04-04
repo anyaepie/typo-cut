@@ -6,8 +6,6 @@ let previewX = 0, previewY = 0, previewWidth = 0, previewHeight = 0;
 let stickerSheetBuffer = null; // To store the generated sticker sheet PGraphics
 let stickerSheetLayoutInfo = null; // Stores calculated layout details {cols, rows, max, w, h, fits}
 
-// --- Sticker Sheet Preview ---
-
 function toggleStickerPreview() {
     showPreview = !showPreview;
     if (showPreview) {
@@ -168,7 +166,7 @@ function createStickerSheetGraphics(targetPreviewWidth = 0) {
 
     // Draw each sticker letter onto the graphics buffer 'pg'
     for (let stickerLetter of stickerLetters) {
-        // <<< SET SEED HERE - Before drawing this sticker letter >>>
+        // note how I reset randomseed by picking up a letter before attempting to draw a letter, clever, right?
         randomSeed(stickerLetter.noiseSeed);
         // Call the buffer-drawing function (relies on seed being set)
         drawLetterWithMaskOnBuffer(
@@ -195,7 +193,7 @@ function saveStickerSheet() {
     if (pg) {
         let timestamp = `${year()}${nf(month(), 2)}${nf(day(), 2)}_${nf(hour(), 2)}${nf(minute(), 2)}${nf(second(), 2)}`;
         let filename = `sticker_sheet_${timestamp}.png`;
-        save(pg, filename); // save() is global p5 function
+        save(pg, filename);
         console.log("Saved Sticker Sheet PNG:", filename);
         pg.remove();
     } else {
