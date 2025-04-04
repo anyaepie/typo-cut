@@ -16,8 +16,9 @@ class LetterObject {
         this.cellHeight = ch;
         this.imageIndex = imgIndex;
         
-        // Initialize noiseSeed ONCE per object instance
-        // 
+        // This is a legacy attribute - I've experimented with letters in one of the assignments
+        // and stored a unique noise seed for each letter, but in this code I define noise globally and calculate
+        // distortion at primitives level relative to their size - it's just looks nicer
         this.noiseSeed = floor(random(1000000));
         
         this.imageSectionPos = [0, 0]; // Stores [x, y] for image crop
