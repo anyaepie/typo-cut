@@ -17,6 +17,7 @@ class LetterObject {
         this.imageIndex = imgIndex;
         
         // Initialize noiseSeed ONCE per object instance
+        // 
         this.noiseSeed = floor(random(1000000));
         
         this.imageSectionPos = [0, 0]; // Stores [x, y] for image crop
@@ -113,12 +114,10 @@ class LetterObject {
             this.imageIndex = 0;
         }
 
-        // <<< SET SEED HERE - using the instance's stored seed >>>
         // This ensures consistent random numbers for this letter's drawing operations this frame
         randomSeed(this.noiseSeed);
 
         // Call the masking/drawing function (defined in LetterRendering.js)
-        // It will use the seed that was just set.
         drawLetterWithMask(
             this.character, this.x, this.y,
             this.cellWidth, this.cellHeight,
