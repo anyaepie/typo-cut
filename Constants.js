@@ -4,7 +4,7 @@
 // --- Global Settings (Many controlled by GUI) ---
 let cellWidth = 30;
 let cellHeight = 60; // 2:1 ratio initially
-let noiseAmount = 0.10;
+let noiseAmount = 0.10; // Starting with some noise, but not max
 let isInvertedMask = false; // Boolean state for mask type
 let spacingFactor = 0.15; // Letter spacing
 let lineSpacingFactor = 0.1; // Line spacing
@@ -37,9 +37,9 @@ const MAX_CELL_SIZE = 200;
 const CELLS_PER_LETTER = 3;
 const MIN_NOISE = 0.00;
 const MAX_NOISE = 0.5;
-const MIN_SPACING = 0.0;
+const MIN_SPACING = 0.1;
 const MAX_SPACING = 1.0;
-const MIN_LINE_SPACING = 0.0;
+const MIN_LINE_SPACING = 0.1;
 const MAX_LINE_SPACING = 0.5;
 
 // --- Text and Layout State ---
@@ -62,7 +62,7 @@ let gradientSettingsFolder; // For gradient color settings
 // Note: Global sticker sheet variables `showPreview`, etc. are in StickerSheet.js
 
 // --- Helper functions ---
-// Convert hex color to RGB array
+// Convert hex color to RGB array - this is legacy as I later read that you can actually consume RGB from GUI directly
 function hexToRgb(hex) {
   // Remove the hash character if present
   hex = hex.replace(/^#/, '');
