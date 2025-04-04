@@ -1,5 +1,7 @@
 // Core utility functions for Typocut
+// (or just something is not directly related to other files)
 
+//Calculate maximum symbols for this canvas size and letter size combination
 function calculateMaxTextLength() {
     let letterWidth = cellWidth * CELLS_PER_LETTER;
     let letterHeight = cellHeight * CELLS_PER_LETTER;
@@ -47,6 +49,7 @@ function calculateMaxTextLength() {
 }
 
 // Debugging function to log detailed information about image sources
+// This is for troubleshooting as I've spent quite some time iterating fancy image uploading
 function logImageSourceDetails() {
     console.log("--- Image Source Debug Info ---");
     console.log("Gradient Images:", gradientImages.length);
