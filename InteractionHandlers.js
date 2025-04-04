@@ -52,7 +52,7 @@ function keyTyped() {
             updateGUIWithCurrentText();
             updateLetterObjects();
         } else {
-            // Optional: Provide visual or audio feedback that maximum has been reached
+            // left for troubleshooting here
             console.log(`Maximum character limit reached (${maxLen})`);
         }
     }
