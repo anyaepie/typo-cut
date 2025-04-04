@@ -11,7 +11,7 @@ Created as a capstone project for [Werkstatt Creative Coding course](https://wer
 
 Each letter is a canvas, randomly cropped from configurable gradients or uploaded images, with adjustable noise and style parameters. Letters are built using strict 3x3 grid with primitives (rectange, triangle, cut-out rectangles, half-circles) that are flipped and rotated as needed - all with noise applied, combining pixel and parametric fonts.
 
-Check out additional details about the process [here](https://www.mixedmeanings.lol/digital/typo-cut) and my other creative coding projects at [mixedmeanings.lol/digital](https://www.mixedmeanings.lol/digital).
+Check out additional details about the process [here](https://www.mixedmeanings.lol/code/typo-cut) and my other creative coding projects at [mixedmeanings.lol/code](https://www.mixedmeanings.lol/code).
 
 ## Table of Contents
 - [Inspiration](#inspiration)
