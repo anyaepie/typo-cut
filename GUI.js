@@ -120,7 +120,7 @@ function setupGUI() {
     };
 
     // Top level controls
-    gui.add(guiSettings, 'uploadImages').name('Upload Images');
+    gui.add(guiSettings, 'uploadImages').name('Upload Images (<10, <2.5MB)');
     
     // Text input with character count update and limit enforcement
     gui.add(guiSettings, 'text')
