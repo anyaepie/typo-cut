@@ -13,6 +13,28 @@ Each letter is a canvas, randomly cropped from configurable gradients or uploade
 
 Check out additional details about the process [here](https://www.mixedmeanings.lol/digital/typo-cut) and my other creative coding projects at [mixedmeanings.lol/digital](https://www.mixedmeanings.lol/digital).
 
+## Table of Contents
+- [Inspiration](#inspiration)
+- [Key Features](#key-features)
+- [Architecture Overview](#architecture-overview)
+  - [Core Files](#core-files)
+  - [Image Management](#image-management)
+  - [Letter Management & Rendering](#letter-management--rendering)
+  - [User Interface & Interaction](#user-interface--interaction)
+  - [Export Features](#export-features)
+- [Application Flow](#application-flow)
+- [Where I've had the most fun](#where-ive-had-the-most-fun)
+  - [Consistent Random Noise with Seeds](#consistent-random-noise-with-seeds)
+  - [Mask Inversion System](#mask-inversion-system)
+  - [Hidden File Upload Implementation](#hidden-file-upload-implementation)
+  - [Primitive Drawing Reuse](#primitive-drawing-reuse)
+  - [A4 Sticker Sheet Letter Distribution Algorithm](#a4-sticker-sheet-letter-distribution-algorithm)
+- [Technical Debt](#technical-debt)
+  - [Crisp Cut-outs](#crisp-cut-outs)
+  - [Duplicate Masking Functions](#duplicate-masking-functions)
+- [AI-Assisted Development](#ai-assisted-development)
+- [Contacts](#contacts)
+
 ## Inspiration
 
 Notable [Coding Train](https://thecodingtrain.com/) tutorials leveraged in this project include:
@@ -185,6 +207,15 @@ Here's how the main components work together:
 
 ## Where I've had the most fun
 
+### Consistent Random Noise with Seeds
+
+Each letter is an object that maintains its unique distortion pattern using a technique called "seeded randomness." Every letter stores its own `noiseSeed` value that gets applied before calling any function that draws a letter:
+
+```javascript
+randomSeed(this.noiseSeed);
+```
+This ensures that when I reposition letters, adjust parameters, or export design, each letter's unique "character" stays consistent rather than regenerating with every frame. It's like giving each letter its own DNA that controls how randomness affects its shape - making your designs reproducible and stable while still maintaining that handcrafted aesthetic.
+
 ### Mask Inversion System
 
 When initially starting with a single (direct) mask, I realised that it would be cool to have an inverse mask. Initially I've wrote two separate functions, yet after seeing almost all the code being repeated, I've introduced a single function with boolean "inverted" parameter:
@@ -281,9 +312,14 @@ function generateLetterSequence(maxLetters) {
 }
 ```
 
-## What is not working as I want it to - Crisp Cut-outs
+## Technical Debt 
+
+While there are multiple areas that could be done in a more scalable way (ditching global variables -> encapsulating related stated into objects; externalising error handling to be visible to the user; using enum or something else for more descriptive letter mapping; better separation of concerns), there are two notable issues I'd like to rectify sooner than later:
+
+### Crisp Cut-outs
 
 As of now, I haven't been able to resolve the issues with how standart mask() function is applied (copy to copy), so I'm using direct pixel manipulation which most likely creates fuzzy corners (and I don't like it!):
+
 ```javascript
 // From LetterRendering.js
 // Apply Manual Mask via Pixel Manipulation
@@ -301,6 +337,19 @@ resultSection.updatePixels();
 ```
 This approach gives precise control over the masking process, though I suspect it introduces some pixelation issues that remain to be solved for crisper letter edges.
 
+### Duplicate Masking Functions
+The codebase currently contains two nearly identical functions for letter masking: drawLetterWithMask and drawLetterWithMaskOnBuffer. This duplication occurred during feature expansion - the original function handled on-screen rendering, while the second was added to support rendering to offscreen buffers for PNG exports and sticker sheets (as I didn't want to lose the progress with the first function and I was working in p5js, so no versioning and branches).
+
+A cleaner approach would be a unified function with a target parameter:
+```javascript
+function drawLetterWithMask(char, x, y, cw, ch, imageIndex, imageSectionPos, inverted, targetBuffer = null) {
+  // Use targetBuffer if provided, otherwise use main canvas
+  const target = targetBuffer || window;  // Use window/global context for main canvas
+  
+  // Same masking logic but use target for drawing operations
+}
+This refactoring is planned once the core masking issues are resolved, which would reduce code duplication and make future modifications easier to implement consistently.
+```
 ## AI-Assisted Development
 
 This is [p5js framework](https://p5js.org/) port from the original [Processing Java](https://processing.org/) code I've developed locally by combining several homework assignments from the course. 
