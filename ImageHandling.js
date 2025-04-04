@@ -107,8 +107,6 @@ function createPlaceholderImage(w, h, index) {
 }
 
 // Function to handle uploaded image files
-// Function to handle uploaded image files
-// Function to handle uploaded image files
 function handleImageUpload(files) {
     console.log(`Processing ${files.length} uploaded image files`);
     
@@ -201,8 +199,7 @@ function handleImageUpload(files) {
                 sourceSelectionFolder.show();
             }
             
-            // Do NOT automatically switch source type
-            // Just update the image availability
+            // Force redraw when successful
             redraw();
         } else {
             // No valid images loaded
