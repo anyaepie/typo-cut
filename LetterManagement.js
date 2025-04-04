@@ -132,9 +132,11 @@ function updateLetterObjects() {
         currentLine.push(i);
     }
     if (currentLine.length > 0) lines.push(currentLine);
-
-    // REMOVED AUTOMATIC SCALING - We now enforce character limits instead
-    // The scaleFactor will always be 1.0
+    
+    // I've had automatic scaling in the previous versions of my code as initially my vision was always to have one line
+    // As I introduced the lines , the scaling started interfere with this approach
+    // As I had no interest in refactoring that part of the code, I just decided that the scaleFactor will always be 1.0
+    // Sorry! (Not sorry)
     let scaleFactor = 1.0;
     
     // Use the original letter dimensions without scaling
