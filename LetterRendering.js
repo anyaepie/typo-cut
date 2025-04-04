@@ -1,5 +1,11 @@
 // --- Letter Definition ---
-// Provides the 3x3 grid codes for each character
+// Provides the 3x3 grid codes for each character, masking and then primitives drawing functions
+// Please note that I have two functions with similar logic: drawLetterWithMask & drawLetterWithMaskonBuffer
+// It happened because I first introduced just masking letters on canvas (drawLetterWithMask) by refactoring it from two functions
+// - inverted and default, but then I've decided to produce A4 preview, save as png, svg, etc - which required a separate canvas
+// I copied the working function into  drawLetterWithMaskonBuffer and updated it to support buffers
+// and now I have two functions that do very similar things
+// I'll refactor them when I solve the issue with masking
 
 function getLetterDefinition(c) {
     c = c.toUpperCase(); // Ensure uppercase for matching
