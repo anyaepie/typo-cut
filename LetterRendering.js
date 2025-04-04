@@ -40,7 +40,7 @@ function getLetterDefinition(c) {
 // --- Letter Rendering (Masking & Primitives) ---
 
 // Unified mask function - draws to the main canvas using MANUAL PIXEL MASKING
-// <<< REMOVED noiseSeed parameter >>> relies on seed set by caller
+// Ideally mask() should be here, but I'm struggling as of now
 function drawLetterWithMask(char, x, y, cw, ch, imageIndex, imageSectionPos, inverted) {
 
     let definition = getLetterDefinition(char);
@@ -80,8 +80,6 @@ function drawLetterWithMask(char, x, y, cw, ch, imageIndex, imageSectionPos, inv
             letterMask.background(0); letterMask.fill(255);
         }
 
-        // <<< Seed was set by the caller (LetterObject.draw) >>>
-
         // Draw primitives onto the small letterMask buffer
         // random() calls inside drawCellPrimitive will use the seed set by caller
         for (let i = 0; i < 3; i++) {
@@ -97,7 +95,6 @@ function drawLetterWithMask(char, x, y, cw, ch, imageIndex, imageSectionPos, inv
                 }
             }
         }
-        // --- Small Letter Mask Ready ---
 
         // --- Get Image Section ---
         let randomX = imageSectionPos[0];
@@ -163,13 +160,11 @@ if (imgSection.width !== totalWidth || imgSection.height !== totalHeight) {
     } finally {
         // --- Clean up temporary buffers ---
         if (letterMask) letterMask.remove();
-        // resultSection is p5.Image, no remove() needed
     }
 }
 
 
 // ADAPTED version to draw onto a specific buffer 'pg' using MANUAL PIXEL MASKING
-// <<< REMOVED noiseSeed parameter >>> relies on seed set by caller
 function drawLetterWithMaskOnBuffer(pg, char, x, y, cw, ch, imageIndex, imageSectionPos, inverted) {
 
     let definition = getLetterDefinition(char);
@@ -209,10 +204,7 @@ function drawLetterWithMaskOnBuffer(pg, char, x, y, cw, ch, imageIndex, imageSec
             letterMask.background(0); letterMask.fill(255);
         }
 
-        // <<< Seed was set by the caller (loop in savePNG/createStickerSheetGraphics) >>>
-
         // Draw primitives onto the small letterMask buffer
-        // random() calls inside drawCellPrimitive will use the seed set by caller
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
                 let index = i * 3 + j;
@@ -226,7 +218,6 @@ function drawLetterWithMaskOnBuffer(pg, char, x, y, cw, ch, imageIndex, imageSec
                 }
             }
         }
-        // --- Small Letter Mask Ready ---
 
         // --- Get Image Section ---
         let randomX = imageSectionPos[0];
@@ -287,7 +278,6 @@ function drawLetterWithMaskOnBuffer(pg, char, x, y, cw, ch, imageIndex, imageSec
 
 
 // Primitive "Broker" Function
-// Uses random() which respects seed set by the caller of drawLetterWithMask...
 function drawCellPrimitive(code, x, y, w, h, pg) {
     if (code === "00") return;
     if (!pg) { console.error("drawCellPrimitive called with invalid graphics context."); return; }
@@ -310,7 +300,7 @@ function drawCellPrimitive(code, x, y, w, h, pg) {
 }
 
 // --- Primitive Drawing Functions ---
-// These use random() internally, respecting the seed set before they are called
+// I'm using relative random based on width/lenght of the cell and global noise parameter
 
 function drawArcPrimitive(x, y, w, h, noise, rotation, pg) {
     pg.push();
@@ -395,26 +385,23 @@ function drawCutoutPrimitive(x, y, w, h, noise, rotation, swapDimensions, pg) {
     // Handle dimension swapping if needed
     let useW = swapDimensions ? h : w;
     let useH = swapDimensions ? w : h;
-    // Add safety check for zero/negative dimensions
     if (useW <= 0 || useH <= 0) { return; }
 
-    pg.push(); // Equivalent to pushMatrix()
+    pg.push(); 
     pg.translate(x + w / 2, y + h / 2); // Move to center of original cell
     pg.rotate(rotation); // Apply rotation
     pg.translate(-useW / 2, -useH / 2); // Translate origin to top-left of useW/useH box
 
     // Calculate corners relative to the new (0,0) origin
-    // Use p5.js global ceil() function
     let ax = 0;
     let ay = 0;
-    let bx = ceil(useW); // Processing: ceil(useW)
+    let bx = ceil(useW); 
     let by = ay;
     let cx = ax;
-    let cy = ceil(useH); // Processing: ceil(useH)
+    let cy = ceil(useH);
     let dx = bx;
     let dy = cy;
 
-    // Draw the main rectangle shape
     pg.beginShape();
     pg.vertex(ax, ay); // A (top-left)
     pg.vertex(bx, by); // B (top-right)
@@ -422,17 +409,13 @@ function drawCutoutPrimitive(x, y, w, h, noise, rotation, swapDimensions, pg) {
     pg.vertex(cx, cy); // C (bottom-left)
 
     // Calculate parameters for the bottom cutout exactly as in Processing
-    // Use p5.js global functions min(), random(), cos(), sin() and constant PI
     let centerX = cx + (dx - cx) / 2; // Center X on the bottom edge
     let centerY = cy;                // Y coordinate of the bottom edge
 
-    // Calculate noisy radii, capped at half dimensions
-    let halfWidth = (dx - cx) / 2; // Note: dx-cx is ceil(useW)
-    let halfHeight = (cy - by) / 2; // Note: cy-by is ceil(useH)
+    let halfWidth = (dx - cx) / 2; 
+    let halfHeight = (cy - by) / 2;
 
-    // Processing: min(0.8*(dx - cx) / 2 + random(0, useW/2 * noise), (dx-cx)/2);
     let radiusX = min(0.8 * halfWidth + random(0, useW / 2 * noise), halfWidth);
-    // Processing: min(0.8*(cy - by) / 2 + random(0, useH/2 * noise), (cy-by)/2);
     let radiusY = min(0.8 * halfHeight + random(0, useH / 2 * noise), halfHeight);
     // Ensure minimum radius to avoid visual glitches
     radiusX = max(1, radiusX);
@@ -442,9 +425,9 @@ function drawCutoutPrimitive(x, y, w, h, noise, rotation, swapDimensions, pg) {
     pg.beginContour();
 
     // Draw the arc for the cutout (upwards from the bottom edge)
-    // Loop from angle 0 to PI, same as Processing
+    // Loop from angle 0 to PI
     let step = PI / 20; // Angle increment
-    for (let angle = 0; angle <= PI; angle += step) { // Added +step to ensure endpoint included
+    for (let angle = 0; angle <= PI; angle += step) {
         let px = centerX + radiusX * cos(angle);
         // Subtract sin(angle) because centerY is at the bottom edge,
         // and positive sin values would go downwards (outside the shape).
