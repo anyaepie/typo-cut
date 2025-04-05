@@ -340,7 +340,7 @@ This approach gives precise control over the masking process, though I suspect i
 ### Duplicate Masking Functions
 The codebase currently contains two nearly identical functions for letter masking: drawLetterWithMask and drawLetterWithMaskOnBuffer. This duplication occurred during feature expansion - the original function handled on-screen rendering, while the second was added to support rendering to offscreen buffers for PNG exports and sticker sheets (as I didn't want to lose the progress with the first function and I was working in p5js, so no versioning and branches).
 
-A cleaner approach would be a unified function with a target parameter:
+A cleaner approach would be a unified function with a target parameter with an extra-function responsible for drawing the canvas (as the original one draws letter by letter and the on-buffer draws on the canvas):
 ```javascript
 function drawLetterWithMask(char, x, y, cw, ch, imageIndex, imageSectionPos, inverted, targetBuffer = null) {
   // Use targetBuffer if provided, otherwise use main canvas
@@ -348,8 +348,18 @@ function drawLetterWithMask(char, x, y, cw, ch, imageIndex, imageSectionPos, inv
   
   // Same masking logic but use target for drawing operations
 }
-This refactoring is planned once the core masking issues are resolved, which would reduce code duplication and make future modifications easier to implement consistently.
 ```
+This refactoring is planned once the core masking issues are resolved, which would reduce code duplication and make future modifications easier to implement consistently.
+
+## Next steps
+
+I'd like to add free suitable fonts as cut outs, yet before that I need to solve the crispiness issue above. 
+Interface-wise, another toggle menu will be introduced to switch between fonts (custom font vs existing fonts vs user fonts):
+- when switched to existing fonts, another sub-menu will pop-up allowing to select fonts that you'd like to use
+- user font would allow the user to upload one or several otf/ttf files to be used
+
+Logic-wise, to re-use existing logic, letter grid size will be used as a container (as then all the line, and sticker calculations will be preserved) and the font size would be decided dynamically to fit each letter inside that container.
+ 
 ## AI-Assisted Development
 
 This is [p5js framework](https://p5js.org/) port from the original [Processing Java](https://processing.org/) code I've developed locally by combining several homework assignments from the course. 
