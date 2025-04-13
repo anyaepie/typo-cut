@@ -39,7 +39,7 @@ let existingFontCollection = [];
 let uploadedFontCollection = [];
 let fontFileInputElement = null;  // Hidden input for font uploads
 const existingFontFilenames = [
-    "cutoutoff.otf",
+    "paperjohn.otf",
     "simpleslum.ttf",
     "survivant.ttf",
     "wunderbar.ttf",
