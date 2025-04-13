@@ -9,7 +9,13 @@ Try it at [typocut.online](https://typocut.online)
 
 Created as a capstone project for [Werkstatt Creative Coding course](https://werkstatt.school/creative-coding), Typocut explores how analogue could be emulated by digital and then converted back to analogue.
 
-Each letter is a canvas, randomly cropped from configurable gradients or uploaded images, with adjustable noise and style parameters. Letters are built using strict 3x3 grid with primitives (rectange, triangle, cut-out rectangles, half-circles) that are flipped and rotated as needed - all with noise applied, combining pixel and parametric fonts.
+There are three choices for letters: 
+
+- “Typocut Default“ is when letters are built using strict 3x3 grid with primitives (rectange, triangle, cut-out rectangles, half-circles) that are flipped & rotated and distorted with noise, combining pixel and parametric fonts feel.
+
+- “Buiilt-in Fonts“ is an array of eight free (both commercial and personal use) fonts that I find aesthetically pleasing for cut-outs needs, you can check out fonts in the fonts folder or by clicking About link on the website.
+
+- “User Fonts“ (you can upload up to 10) is an array of user-uploaded fonts that are used in a similar fashion to built-in fonts (randomly assigned). I recommend to test the tool with [Cut Out The Jams](https://www.behance.net/gallery/12330303/Cut-Out-The-Jams-A-Free-Font)(free for personal, student and non-profit use).
 
 Check out additional details about the process [here](https://www.mixedmeanings.lol/code/typo-cut) and my other creative coding projects at [mixedmeanings.lol/code](https://www.mixedmeanings.lol/code).
 
@@ -68,16 +74,20 @@ A4 alphabet sheet can be previewed and saved as PNG separately, with letter conf
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#ff0000', 'secondaryColor': '#ffffff', 'tertiaryColor': '#ffffff' }}}%%
 graph LR
-    Setup[Setup Canvas] --> GUI[Initialize GUI] --> Images[Load/Generate Images] --> Letters[Create Letter Objects] --> Draw[Draw to Canvas]
+    Setup[Setup Canvas] --> GUI[Initialize GUI] --> Fonts[Load Fonts] --> Images[Load/Generate Images] --> Letters[Create Letter Objects] --> Draw[Draw to Canvas]
     User[User Interaction] --> |Text/Parameters| GUI
     User --> |Mouse/Keyboard| Letters
+    User --> |Upload Images| Images
+    User --> |Upload Fonts| Fonts
     Draw --> Export[Export PNG/Sticker Sheet]
+    Letters --> |Font Selection| Draw
+    Fonts --> |Built-in/Uploaded| Letters
     
     classDef flow fill:#e8daef,stroke:#333,stroke-width:1px;
     classDef user fill:#d5f5e3,stroke:#333,stroke-width:1px;
     classDef output fill:#fdebd0,stroke:#333,stroke-width:1px;
     
-    class Setup,GUI,Images,Letters,Draw flow;
+    class Setup,GUI,Images,Fonts,Letters,Draw flow;
     class User user;
     class Export output;
 ```
@@ -102,6 +112,14 @@ graph TB
         FileHandling --> SaveOutput[Save PNG]
     end
     
+    %% Font Processing
+    subgraph Font[Font Handling]
+        direction TB
+        FontHandling[FontHandling.js] --> LoadFonts[Load built-in fonts]
+        FontHandling --> ProcessFonts[Process uploaded fonts]
+        FontHandling --> FontInput[Hidden font input]
+    end
+    
     %% Letter Processing 
     subgraph Letter[Letter Processing]
         direction TB
@@ -109,6 +127,8 @@ graph TB
         LetterRender[LetterRendering.js] --> LetterDef[Letter definitions]
         LetterRender --> Masking[Pixel masking]
         LetterManage[LetterManagement.js] --> Layout[Calculate layout]
+        LetterMaskDraw[LetterDrawWithMask.js] --> CanvasMasking[Canvas rendering]
+        LetterBufferDraw[LetterDrawWithMaskOnBuffer.js] --> BufferMasking[Buffer rendering]
     end
     
     %% User Interaction
@@ -116,6 +136,7 @@ graph TB
         direction TB
         GUISetup[GUI.js] --> Controls[Parameter controls]
         GUISetup --> SourceType[Image source toggle]
+        GUISetup --> FontType[Font type toggle]
         Interaction[InteractionHandlers.js] --> Mouse[Drag letters]
     end
     
@@ -129,81 +150,98 @@ graph TB
     %% Connections between components
     Constants -.-> All[All modules]
     Core --> Image
+    Core --> Font
     Core --> Letter
     Core --> UI
     Core --> Export
     GUISetup --> ImgHandling
+    GUISetup --> FontHandling
     Interaction --> LetterManage
     LetterObj --> LetterRender
+    LetterObj --> LetterMaskDraw
+    LetterRender --> LetterMaskDraw
+    LetterRender --> LetterBufferDraw
+    FontHandling --> LetterObj
     ImgHandling --> LetterManage
     FileHandling --> ImgHandling
+    FileHandling --> FontHandling
     LetterManage --> Sticker
-
+    LetterBufferDraw --> SaveOutput
+    LetterBufferDraw --> SaveSheet
+    
     classDef core fill:#f9d5e5,stroke:#000000,stroke-width:1px,color:#000000;
     classDef image fill:#e6f2ff,stroke:#000000,stroke-width:1px,color:#000000;
+    classDef font fill:#fce2c4,stroke:#000000,stroke-width:1px,color:#000000;
     classDef letter fill:#d3f0ee,stroke:#000000,stroke-width:1px,color:#000000;
     classDef ui fill:#d5f5e3,stroke:#000000,stroke-width:1px,color:#000000;
     classDef export fill:#fdebd0,stroke:#000000,stroke-width:1px,color:#000000;
     classDef default fill:#ffffff,stroke:#000000,stroke-width:1px,color:#000000;
-
+    
     class Constants,CoreFunctions,Sketch,Core core;
     class ImgHandling,FileHandling,Gradients,ProcessUploads,FileInput,SaveOutput,Image image;
-    class LetterObj,LetterRender,LetterManage,Properties,LetterDef,Masking,Layout,Letter letter;
-    class GUISetup,Interaction,Controls,SourceType,Mouse,UI ui;
+    class FontHandling,LoadFonts,ProcessFonts,FontInput,Font font;
+    class LetterObj,LetterRender,LetterManage,LetterMaskDraw,LetterBufferDraw,Properties,LetterDef,Masking,Layout,CanvasMasking,BufferMasking,Letter letter;
+    class GUISetup,Interaction,Controls,SourceType,FontType,Mouse,UI ui;
     class Sticker,Distribution,SaveSheet,Export export;
-
 ```
 Here's how the main components work together:
 
-### Core Files
+## Project Structure
 
-- **Constants.js**: Contains global settings, state variables, and utility functions used throughout the application.
-- **sketch.js**: The main p5.js sketch file that initializes the canvas and handles the drawing loop.
-- **CoreFunctions.js**: Houses utility functions for calculating layout and debugging image sources.
+### Core Files
+* **Constants.js**: Contains global settings, state variables, and utility functions used throughout the application.
+* **sketch.js**: The main p5.js sketch file that initializes the canvas and handles the drawing loop.
+* **CoreFunctions.js**: Houses utility functions for calculating layout and debugging image sources.
 
 ### Image Management
+* **ImageHandling.js**: Responsible for creating gradient placeholders and processing uploaded images.
+* **FileHandling.js**: Handles file uploads, input setup, and saving PNG output.
 
-- **ImageHandling.js**: Responsible for creating gradient placeholders and processing uploaded images.
-- **FileHandling.js**: Handles file uploads, input setup, and saving PNG output.
+### Font Management
+* **FontHandling.js**: Manages both built-in and user-uploaded fonts, including loading, validation, and registration.
 
 ### Letter Management & Rendering
-
-- **LetterObject.js**: Class definition for letter objects with positioning, dimensions, and rendering properties.
-- **LetterRendering.js**: Contains letter definitions as cell codes and masking/rendering functions.
-- **LetterManagement.js**: Handles creating, updating, and organizing letter objects on the canvas.
+* **LetterObject.js**: Class definition for letter objects with positioning, dimensions, rendering properties, and font assignments.
+* **LetterRendering.js**: Contains letter definitions as cell codes and primitive drawing functions.
+* **LetterDrawWithMask.js**: Handles the main rendering process for letters on the canvas with masking effects.
+* **LetterDrawWithMaskOnBuffer.js**: Specialized version for drawing to offscreen buffers (used for exports).
+* **LetterManagement.js**: Handles creating, updating, and organizing letter objects on the canvas.
 
 ### User Interface & Interaction
-
-- **GUI.js**: Sets up the control panel using lil-gui library and manages GUI state.
-- **InteractionHandlers.js**: Manages mouse and keyboard interactions for manipulating letters.
+* **GUI.js**: Sets up the control panel using lil-gui library and manages GUI state, including font type dropdown.
+* **InteractionHandlers.js**: Manages mouse and keyboard interactions for manipulating letters.
 
 ### Export Features
-
-- **StickerSheet.js**: Handles generating sticker sheets for printing on A4 paper.
+* **StickerSheet.js**: Handles generating sticker sheets for printing on A4 paper.
 
 ## Application Flow
 
 1. **Initialization**:
-   - Canvas setup in the browser window
-   - GUI controls initialization
-   - Initial gradient images are generated
-   - Letter objects created based on default text
+   * Canvas setup in the browser window
+   * Loading of built-in fonts from the fonts directory
+   * GUI controls initialization
+   * Initial gradient images are generated
+   * Letter objects created based on default text
 
 2. **User Interaction Loop**:
-   - User inputs text or modifies parameters via GUI
-   - Letters are updated with new parameters
-   - Mouse interaction allows for direct manipulation of letter positions
-   - Image source can be toggled between gradients and uploaded files
+   * User inputs text or modifies parameters via GUI
+   * User can upload custom images and fonts
+   * Letters are updated with new parameters
+   * Mouse interaction allows for direct manipulation of letter positions
+   * Image source can be toggled between gradients and uploaded files
+   * Font type can be switched between Typocut Default, Built-in Fonts, and Uploaded Fonts
 
 3. **Rendering Process**:
-   - Each letter is rendered using its character definition
-   - Images are applied through masking technique
-   - Random noise is applied to letter shapes for visual interest
-   - Canvas is redrawn when parameters change
+   * Each letter is rendered using either primitive shapes or font glyphs depending on the selected font type
+   * Images are applied through masking technique
+   * Random noise is applied to letter shapes and font characters for visual interest
+   * Canvas is redrawn when parameters change
+   * Each letter maintains its individual image section, noise seed, and font assignment
 
 4. **Export Options**:
-   - Export as PNG with current layout
-   - Generate A4 sticker sheet with optimized letter distribution
+   * Export as PNG with current layout
+   * Generate A4 sticker sheet with optimized letter distribution
+   * Exports preserve all styling, masking, and font choices
 
 ## Where I've had the most fun
 
@@ -312,16 +350,14 @@ function generateLetterSequence(maxLetters) {
 }
 ```
 
-## Technical Debt 
+## Where I've had the most fun (2) - tackling meaningful technical debt & introducing new features
 
-While there are multiple areas that could be done in a more scalable way (ditching global variables -> encapsulating related stated into objects; externalising error handling to be visible to the user; using enum or something else for more descriptive letter mapping; better separation of concerns), there are two notable issues I'd like to rectify sooner than later:
-
+![Before and After Pixel Density Changes](before-after-pixel-density.png)
 ### Crisp Cut-outs
-
-As of now, I haven't been able to resolve the issues with how standart mask() function is applied (copy to copy), so I'm using direct pixel manipulation which most likely creates fuzzy corners (and I don't like it!):
+My initial hypothesis for the rough edges on the cut-outs was the fact that instead of standart mask() function I've used direct pixel manipulation:
 
 ```javascript
-// From LetterRendering.js
+// From LetterRendering.js - previous version
 // Apply Manual Mask via Pixel Manipulation
 letterMask.loadPixels();
 resultSection.loadPixels();
@@ -335,7 +371,17 @@ for (let i = 0; i < letterMask.pixels.length; i += 4) {
 }
 resultSection.updatePixels();
 ```
-This approach gives precise control over the masking process, though I suspect it introduces some pixelation issues that remain to be solved for crisper letter edges.
+In the end, the issue was in pixelDensity which I needed to meticolously correct throughout the code to ensure that the masks and underlying images are of the same size. Additionally, I later decided to introduce greater pixel density for saving needs as I just wanted that extra-crispiness for the outputs.
+
+### New fonts
+Adding bult-in fonts and providing an option for the user to upload theirs has been made possible by re-use of logic I've introduced for images (hidden upload system button, storing files in memory), re-using conditional hide/show for the images sub-menus and introducing decision forks in both masking functions.
+
+The drawback of this late addition is that I'm re-using letter grid size as a container (as then all the line, and sticker calculations will be preserved) and the font size would is decided dynamically to fit each letter inside that container.
+
+
+## Moving forward
+
+There are multiple areas that could be done in a more scalable way (ditching global variables -> encapsulating related stated into objects; externalising error handling to be visible to the user; using enum or something else for more descriptive letter mapping; better separation of concerns). Additionally, after increasing pixelDensity, the tool became slower - and performance optimisation is always a possibility. I don't know yet if I have the discipline needed to work on these, but let's see!
 
 ### Duplicate Masking Functions
 The codebase currently contains two nearly identical functions for letter masking: drawLetterWithMask and drawLetterWithMaskOnBuffer. This duplication occurred during feature expansion - the original function handled on-screen rendering, while the second was added to support rendering to offscreen buffers for PNG exports and sticker sheets (as I didn't want to lose the progress with the first function and I was working in p5js, so no versioning and branches).
@@ -349,16 +395,7 @@ function drawLetterWithMask(char, x, y, cw, ch, imageIndex, imageSectionPos, inv
   // Same masking logic but use target for drawing operations
 }
 ```
-This refactoring is planned once the core masking issues are resolved, which would reduce code duplication and make future modifications easier to implement consistently.
-
-## Next steps
-
-I'd like to add free suitable fonts as cut outs, yet before that I need to solve the crispiness issue above. 
-Interface-wise, another toggle menu will be introduced to switch between fonts (custom font vs existing fonts vs user fonts):
-- when switched to existing fonts, another sub-menu will pop-up allowing to select fonts that you'd like to use
-- user font would allow the user to upload one or several otf/ttf files to be used
-
-Logic-wise, to re-use existing logic, letter grid size will be used as a container (as then all the line, and sticker calculations will be preserved) and the font size would be decided dynamically to fit each letter inside that container.
+While I initially planned to tackle this after solving pixelDensity issue, I've decided to add a new feature - built-in and user uploaded fonts and decided not to work on code duplication, it's a pet project after all. Maybe I come back to it later if the new features would strongly call for that.
  
 ## AI-Assisted Development
 
@@ -375,6 +412,8 @@ NB! I've used "chain of thought"-like approach to work with Gemini:
 I manually copied code files converted by the model to p5js.org to keep iterating on gui and file upload. Alternative option was to copy all files on github, sync the repo locally and use VSCode + Copilot to keep iterating, yet I really liked ability to quickly iterate (save-play-stop) available through web-intefrace on p5js.org.
 
 Website (index.html) is responsibly (?) vibe-coded with Claude 3.7 (and cross evaluated with Gemini) as I'm an absolute noob when it comes to front-end.
+
+This documentation, especially diagramms are produced by Claude based on the code files uploaded and edited by hand after.
 
 ## Contacts
 
