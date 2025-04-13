@@ -376,6 +376,8 @@ In the end, the issue was in pixelDensity which I needed to meticolously correct
 ### New fonts
 Adding bult-in fonts and providing an option for the user to upload theirs has been made possible by re-use of logic I've introduced for images (hidden upload system button, storing files in memory), re-using conditional hide/show for the images sub-menus and introducing decision forks in both masking functions.
 
+![Impact of Legacy letter box on other fonts](legacy-letter-box-fonts-impact.png)
+
 The drawback of this late addition is that I'm re-using letter grid size as a container (as then all the line, and sticker calculations will be preserved) and the font size would is decided dynamically to fit each letter inside that container.
 
 
