@@ -352,7 +352,6 @@ function generateLetterSequence(maxLetters) {
 
 ## Where I've had the most fun (2) - tackling meaningful technical debt & introducing new features
 
-![Before and After Pixel Density Changes](before-after-pixel-density.png)
 ### Crisp Cut-outs
 My initial hypothesis for the rough edges on the cut-outs was the fact that instead of standart mask() function I've used direct pixel manipulation:
 
@@ -371,7 +370,8 @@ for (let i = 0; i < letterMask.pixels.length; i += 4) {
 }
 resultSection.updatePixels();
 ```
-In the end, the issue was in pixelDensity which I needed to meticolously correct throughout the code to ensure that the masks and underlying images are of the same size. Additionally, I later decided to introduce greater pixel density for saving needs as I just wanted that extra-crispiness for the outputs.
+In the end, the issue was in pixelDensity which I needed to meticolously correct throughout the code to ensure that the masks and underlying images are of the same size. Additionally, I later decided to introduce greater pixel density for saving needs as I just wanted that extra-crispiness for the outputs:
+![Before and After Pixel Density Changes](before-after-pixel-density.png)
 
 ### New fonts
 Adding bult-in fonts and providing an option for the user to upload theirs has been made possible by re-use of logic I've introduced for images (hidden upload system button, storing files in memory), re-using conditional hide/show for the images sub-menus and introducing decision forks in both masking functions.
@@ -379,7 +379,6 @@ Adding bult-in fonts and providing an option for the user to upload theirs has b
 ![Impact of Legacy letter box on other fonts](legacy-letter-box-fonts-impact.png)
 
 The drawback of this late addition is that I'm re-using letter grid size as a container (as then all the line, and sticker calculations will be preserved) and the font size would is decided dynamically to fit each letter inside that container.
-
 
 ## Moving forward
 
