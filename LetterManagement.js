@@ -83,7 +83,9 @@ function updateLetterObjects() {
             existingLetters[key] = {
                 imageIndex: letter.imageIndex,
                 noiseSeed: letter.noiseSeed,
-                imageSectionPos: letter.imageSectionPos
+                imageSectionPos: letter.imageSectionPos,
+                assignedExistingFont: letter.assignedExistingFont,
+                assignedUploadedFont: letter.assignedUploadedFont
             };
         }
     }
@@ -97,6 +99,7 @@ function updateLetterObjects() {
         return; 
     }
 
+  
     // Calculate base dimensions
     let baseCellWidth = cellWidth;
     let baseCellHeight = cellHeight;
@@ -109,6 +112,7 @@ function updateLetterObjects() {
         redraw();
         return;
     }
+    
 
     // Calculate spacing
     let letterSpacing = letterWidth * spacingFactor;

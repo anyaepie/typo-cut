@@ -1,4 +1,5 @@
 // constants.js - All global constants and state variables for Typocut
+// 
 // To be imported by other files
 
 // --- Global Settings (Many controlled by GUI) ---
@@ -30,6 +31,23 @@ let fileInputElement = null;
 let maxFileCount = 10;
 let maxFileSize = 2.5 * 1024 * 1024; // 2.5MB in bytes
 let hasUploadedImages = false; // Flag to track if user has uploaded images
+let savingPixelDensity=4;
+
+// --- Font Uploading Stuff ---
+let fontType = "Typocut Default"; 
+let existingFontCollection = [];
+let uploadedFontCollection = [];
+let fontFileInputElement = null;  // Hidden input for font uploads
+const existingFontFilenames = [
+    "cutoutoff.otf",
+    "simpleslum.ttf",
+    "survivant.ttf",
+    "wunderbar.ttf",
+    "witless.ttf",
+    "troika.otf",
+    "notqr.ttf",
+    "rocks.ttf"
+];
 
 // --- Limits and Constants ---
 const MIN_CELL_SIZE = 20;
@@ -37,7 +55,7 @@ const MAX_CELL_SIZE = 200;
 const CELLS_PER_LETTER = 3;
 const MIN_NOISE = 0.00;
 const MAX_NOISE = 0.5;
-const MIN_SPACING = 0.1;
+const MIN_SPACING = 0.0;
 const MAX_SPACING = 1.0;
 const MIN_LINE_SPACING = 0.1;
 const MAX_LINE_SPACING = 0.5;
@@ -55,8 +73,10 @@ let dragOffsetX, dragOffsetY; // For smooth dragging relative to click point
 
 // --- UI Variables ---
 let gui; // For lil-gui panel
-let sourceSelectionFolder; // For dynamic source selection controls
+let guiSourceController=null; // For dynamic source selection controls
 let gradientSettingsFolder; // For gradient color settings
+let guiFontController = null;
+let statusMessage='';
 
 // Note: Global image variables `sourceImages`, `imageCount` are in ImageHandling.js
 // Note: Global sticker sheet variables `showPreview`, etc. are in StickerSheet.js

@@ -25,8 +25,8 @@ function createPlaceholders() {
     // Reset gradient images array
     gradientImages = [];
     
-    let placeholderWidth = 200;
-    let placeholderHeight = 200;
+    let placeholderWidth = MAX_CELL_SIZE*3;
+    let placeholderHeight = MAX_CELL_SIZE*3;
     
     for (let i = 0; i < 4; i++) {
         let placeholder = createPlaceholderImage(placeholderWidth, placeholderHeight, i);
@@ -48,6 +48,7 @@ function createPlaceholders() {
 // Creates a single placeholder image with a gradient pattern
 function createPlaceholderImage(w, h, index) {
     let img = createImage(w, h);
+    img.pixelDensity=2;
     if (!img) return null;
 
     img.loadPixels();
@@ -193,11 +194,7 @@ function handleImageUpload(files) {
         if (uploadedImages.length > 0) {
             // Successfully loaded some images
             hasUploadedImages = true;
-            
-            // Show source selection
-            if (typeof sourceSelectionFolder !== 'undefined' && sourceSelectionFolder) {
-                sourceSelectionFolder.show();
-            }
+            updateSourceTypeOptions();
             
             // Force redraw when successful
             redraw();

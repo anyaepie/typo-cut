@@ -2,8 +2,11 @@
 // Uses modular functions from separate files
 
 function preload() {
-    // Preload is empty - we now handle images through the GUI
-    // left for legacy reasons as I had it before
+
+    // Call the font loading function
+    loadFontsFromArray();
+
+
 }
 
 function setup() {
@@ -27,9 +30,7 @@ function setup() {
     
     const canvas = createCanvas(containerWidth, containerHeight);
     canvas.parent(canvasContainer);
-    
-    // Enable antialiasing for smoother edges
-    smooth();
+    noSmooth();
 
     // Initialize boundary calculations
     boundary = width * boundaryPercent;
@@ -37,7 +38,7 @@ function setup() {
     usableHeight = height - (2 * boundary);
 
     // Create hidden file input for image uploads
-    setTimeout(initializeFileInput, 100);
+    setTimeout(initializeFileInputs, 100);
 
     // Initialize lil-gui
     setupGUI();
@@ -75,10 +76,10 @@ function draw() {
         image(stickerSheetBuffer, previewX, previewY, previewWidth, previewHeight);
         // Draw border and info text for the preview
         push();
-        noFill(); stroke(100);
+        noFill(); stroke(10);
         rect(previewX, previewY, previewWidth, previewHeight);
         textFont('-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif');
-        fill(0); stroke(0); textSize(12); textAlign(LEFT, BOTTOM);
+        fill(0); stroke(0); textSize(11); textAlign(LEFT, BOTTOM);
         let info = stickerSheetLayoutInfo || { cols: '?', rows: '?', max: '?', w: '?', h: '?', fits: false };
         text(`A4 Preview (${info.cols}x${info.rows}=${info.max}), Letter: ${nfc(info.w, 1)}x${nfc(info.h, 1)} cm`,
              previewX, previewY - 5);
@@ -86,6 +87,15 @@ function draw() {
             fill(255, 0, 0); textAlign(LEFT, TOP);
             text("Warning: Cannot fit all 26 letters!", previewX, previewY + previewHeight + 5);
         }
+        pop();
+    }
+    if (statusMessage!=='') {
+        push();
+        fill(0);
+        noStroke();
+        textAlign(LEFT, LEFT);
+        textSize(11);
+        text(statusMessage, 20, height - 20);
         pop();
     }
 }

@@ -9,16 +9,20 @@ let stickerSheetLayoutInfo = null; // Stores calculated layout details {cols, ro
 function toggleStickerPreview() {
     showPreview = !showPreview;
     if (showPreview) {
+        statusMessage='Generating A4 Sticker Preview....';
         previewWidth = 300;
         previewX = width - previewWidth - 20;
         previewY = 60;
-        stickerSheetBuffer = createStickerSheetGraphics(previewWidth);
+        stickerSheetBuffer = createStickerSheetGraphics(255,previewWidth);
         if (!stickerSheetBuffer) { showPreview = false; }
     } else {
         if (stickerSheetBuffer) { stickerSheetBuffer.remove(); stickerSheetBuffer = null; }
         stickerSheetLayoutInfo = null;
     }
-    redraw();
+  setTimeout(() => { 
+  statusMessage = ''; 
+  }, 500);  
+  redraw();
 }
 
 // --- Letter Sequence Generation ---
@@ -70,7 +74,7 @@ function generateLetterSequence(maxLetters) {
 
 // --- Sticker Sheet Graphics Creation ---
 
-function createStickerSheetGraphics(targetPreviewWidth = 0) {
+function createStickerSheetGraphics(alpha_value,targetPreviewWidth = 0) {
     const A4_WIDTH_PX = 1654;
     const A4_HEIGHT_PX = 2339;
     const DPI = 200;
@@ -148,36 +152,62 @@ function createStickerSheetGraphics(targetPreviewWidth = 0) {
     // --- Create Graphics Buffer ---
     let pg = createGraphics(A4_WIDTH_PX, A4_HEIGHT_PX);
      if (!pg) { console.error("Failed to create sticker sheet graphics buffer."); return null;}
-    pg.pixelDensity(1); // Match pixel density?
-    pg.background(255);
+    pg.pixelDensity(savingPixelDensity); 
+    pg.background(255,alpha_value);
 
-    // Temporarily create LetterObjects for the sheet
+    // Temporarily create LetterObjects for the sheet  
     let stickerLetters = [];
+    console.log("Creating LetterObjects for sticker sheet...");
     for (let i = 0; i < min(letterSequence.length, layout.maxLetters); i++) {
+        // ... calculate row, col, x, y, char, imageIndex ...
         let row = floor(i / layout.cols);
         let col = i % layout.cols;
         let x = startX + col * (currentLetterWidth + layout.letterSpacingPx);
         let y = startY + row * (currentLetterHeight + layout.lineSpacingPx);
         let letterChar = letterSequence.charAt(i);
-        let randomImageIndex = (imageCount > 0) ? floor(random(imageCount)) : 0; // imageCount is global
+        let randomImageIndex = (imageCount > 0) ? floor(random(imageCount)) : 0;
         let stickerLetter = new LetterObject(letterChar, x, y, finalCellW, finalCellH, randomImageIndex);
         stickerLetters.push(stickerLetter);
     }
+    console.log(`Created ${stickerLetters.length} LetterObjects.`);
+  
+  for (let stickerLetter of stickerLetters) {
+        if (!stickerLetter) continue;
+        randomSeed(stickerLetter.noiseSeed); // Keep your clever seed reset
 
-    // Draw each sticker letter onto the graphics buffer 'pg'
-    for (let stickerLetter of stickerLetters) {
-        // note how I reset randomseed by picking up a letter before attempting to draw a letter, clever, right?
-        randomSeed(stickerLetter.noiseSeed);
-        // Call the buffer-drawing function (relies on seed being set)
-        drawLetterWithMaskOnBuffer(
-            pg,
-            stickerLetter.character, stickerLetter.x, stickerLetter.y,
-            stickerLetter.cellWidth, stickerLetter.cellHeight,
-            stickerLetter.imageIndex, stickerLetter.imageSectionPos,
-            isInvertedMask // isInvertedMask is global
+        // --- *** THE ONLY INTENDED CHANGE AREA *** ---
+        // Determine which font object to pass based on GLOBAL fontType
+        // and the font pre-assigned to THIS stickerLetter instance
+        let fontToUse = null;
+        if (fontType === 'Built-in Fonts') {
+            fontToUse = stickerLetter.assignedExistingFont;
+            if (!fontToUse) { // Minimal safety check
+                console.warn(`Sticker '${stickerLetter.character}': 'Existing' mode but no assigned font found.`);
+            }
+        } else if (fontType === 'Uploaded Fonts') {
+            fontToUse = stickerLetter.assignedUploadedFont;
+       
+        }
+        // If fontType is 'Typocut', fontToUse remains null.
+
+        // --- Call the buffer-drawing function with the CORRECT signature ---
+        // *** Make sure this function name is correct (Optimized version) ***
+        // *** And that it accepts the new parameters ***
+        drawLetterWithMaskOnBuffer( // USE THE OPTIMIZED VERSION NAME
+            pg,                             // Target buffer
+            stickerLetter.character,        // Character
+            stickerLetter.x,                // Position x
+            stickerLetter.y,                // Position y
+            stickerLetter.cellWidth,        // Cell width
+            stickerLetter.cellHeight,       // Cell height
+            stickerLetter.imageIndex,       // Source image index
+            stickerLetter.imageSectionPos,  // Source image crop position [x, y]
+            isInvertedMask,                 // Global inversion flag
+            // --- Pass the NEW parameters ---
+            fontType,                       // Global mask mode ('Typocut', 'Existing', 'Uploaded')
+            fontToUse                       // The specific p5.Font object for this letter in this mode (or null)
         );
-    }
-
+  }
     if (targetPreviewWidth > 0) {
         previewHeight = pg.height * (targetPreviewWidth / pg.width);
     }
@@ -188,14 +218,19 @@ function createStickerSheetGraphics(targetPreviewWidth = 0) {
 // --- Sticker Sheet Saving ---
 
 function saveStickerSheet() {
+    statusMessage='Saving A4 Sticker PNG....';
     console.log("Generating sticker sheet for saving...");
-    let pg = createStickerSheetGraphics(); // Generate the full A4 buffer
+    let pg = createStickerSheetGraphics(0); // Generate the full A4 buffer
     if (pg) {
         let timestamp = `${year()}${nf(month(), 2)}${nf(day(), 2)}_${nf(hour(), 2)}${nf(minute(), 2)}${nf(second(), 2)}`;
-        let filename = `sticker_sheet_${timestamp}.png`;
+        let filename = `typocut_sheet_${timestamp}.png`;
         save(pg, filename);
         console.log("Saved Sticker Sheet PNG:", filename);
         pg.remove();
+     setTimeout(() => { 
+                statusMessage = ''; 
+                redraw();
+            }, 1300);
     } else {
         console.error("Failed to generate sticker sheet buffer for saving.");
         alert("Error: Could not generate sticker sheet.");

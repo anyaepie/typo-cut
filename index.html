@@ -20,7 +20,7 @@
         }
         .app-container {
             display: flex;
-            height: calc(100% - 50px); /* Make room for header and footer */
+            height: calc(100% - 40px); /* Make room for header and footer */
         }
         #header {
             position: absolute;
@@ -108,7 +108,11 @@
         }
         .lil-gui { 
             width: 100% !important; 
-	--background-color: #f6f6f6;
+	--font-size: 11px;
+	--input-font-size: 11px;
+    --padding: 3px;
+	--spacing: 3px;      
+    --background-color: #f6f6f6;
 	--text-color: #3d3d3d;
 	--title-background-color: #efefef;
 	--title-text-color: #3d3d3d;
@@ -291,9 +295,13 @@
     <!-- Constants and core dependencies -->
     <script src="Constants.js"></script>
     <script src="ImageHandling.js"></script>
+    <script src="FontHandling.js"></script>
     <script src="LetterObject.js"></script>
     <script src="LetterRendering.js"></script>
+    <script src="LetterMasking.js"></script>
     <script src="StickerSheet.js"></script>
+    <script src="LetterDrawWithMask.js"></script>
+    <script src="LetterDrawWithMaskOnBuffer.js"></script>
 
     <!-- Modular application files -->
     <script src="CoreFunctions.js"></script>

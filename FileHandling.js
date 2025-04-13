@@ -1,102 +1,182 @@
 // File handling functions for Typocut
+// --- Global Variables for File Inputs (Keep these outside functions) ---
+let imageFileInputElement = null; // For image uploads
 
-// Function to create or get the hidden file input element (reset every time when a bunch of images is uploaded)
-function setupFileInput() {
-  // Remove any existing file input
-  if (fileInputElement) {
-    fileInputElement.remove();
+// --- Image Upload Input Setup ---
+
+/**
+ * Creates or gets the hidden file input element for IMAGE uploads.
+ * Assigns handleImageUpload to its change event.
+ */
+function setupImageFileInput() { // Renamed for clarity
+  // Remove any existing IMAGE file input
+  if (imageFileInputElement) {
+    imageFileInputElement.remove();
   }
-  
-  // Create a new native file input
-  fileInputElement = document.createElement('input');
-  fileInputElement.type = 'file';
-  fileInputElement.multiple = true; // Enable multiple file selection
-  fileInputElement.accept = 'image/jpeg,image/png,image/jpg'; // Restrict to image types
-  fileInputElement.style.position = 'absolute';
-  fileInputElement.style.top = '-1000px'; // Position off-screen
-  fileInputElement.style.opacity = '0';
-  fileInputElement.style.pointerEvents = 'none';
-  
-  // Add to the document body
-  document.body.appendChild(fileInputElement);
-  
-  // Set up the change event handler
-  fileInputElement.onchange = function(event) {
+
+  // Create a new native file input for IMAGES
+  imageFileInputElement = document.createElement('input');
+  imageFileInputElement.type = 'file';
+  imageFileInputElement.multiple = true; // Enable multiple file selection
+  imageFileInputElement.accept = 'image/jpeg,image/png,image/jpg'; // Restrict to image types
+  imageFileInputElement.style.position = 'absolute';
+  imageFileInputElement.style.left = '-10000px'; // Position off-screen reliably
+  imageFileInputElement.style.top = '-10000px';
+  imageFileInputElement.style.zIndex = '-1';
+  imageFileInputElement.id = 'imageUploadInput'; // Assign ID
+
+  document.body.appendChild(imageFileInputElement);
+  console.log("Created hidden image input.");
+
+  // Set up the change event handler for IMAGES
+  imageFileInputElement.onchange = function(event) {
     const files = event.target.files;
-    
     if (files && files.length > 0) {
-      console.log(`Selected ${files.length} files`);
-      
-      // Convert FileList to array
+      console.log(`Selected ${files.length} image files`);
       const filesArray = Array.from(files);
-      
-      // Process files
-      handleImageUpload(filesArray);
+      // *** Make sure handleImageUpload is defined elsewhere and accepts filesArray ***
+      if (typeof handleImageUpload === 'function') {
+           handleImageUpload(filesArray); // Call IMAGE handler
+      } else {
+           console.error("handleImageUpload function is not defined!");
+      }
     } else {
-      console.warn("No files were selected");
+      console.warn("No image files were selected");
     }
+    // event.target.value = null; // Optional reset
   };
-  
-  return fileInputElement;
+
+  return imageFileInputElement;
 }
 
-// Function to handle the upload button click
-function uploadImagesClicked() {
+// --- Font Upload Input Setup ---
+
+/**
+ * Creates or gets the hidden file input element for FONT uploads.
+ * Assigns handleFontUpload to its change event.
+ */
+function setupFontFileInput() { // NEW function for fonts
+  // Remove any existing FONT file input
+  if (fontFileInputElement) {
+    fontFileInputElement.remove();
+  }
+
+  // Create a new native file input for FONTS
+  fontFileInputElement = document.createElement('input');
+  fontFileInputElement.type = 'file';
+  fontFileInputElement.multiple = true; // Enable multiple file selection
+  fontFileInputElement.accept = '.ttf,.otf'; // Restrict to FONT types
+  fontFileInputElement.style.position = 'absolute';
+  fontFileInputElement.style.left = '-10000px'; // Position off-screen reliably
+  fontFileInputElement.style.top = '-10000px';
+  fontFileInputElement.style.zIndex = '-1';
+  fontFileInputElement.id = 'fontUploadInput'; // Assign ID
+
+  document.body.appendChild(fontFileInputElement);
+  console.log("Created hidden font input.");
+
+  // Set up the change event handler for FONTS
+  fontFileInputElement.onchange = function(event) {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      console.log(`Selected ${files.length} font files`);
+      const filesArray = Array.from(files);
+      // *** Calls the font handler function below ***
+      handleFontUpload(filesArray); // Call FONT handler
+    } else {
+      console.warn("No font files were selected");
+    }
+     // event.target.value = null; // Optional reset
+  };
+
+  return fontFileInputElement;
+}
+
+
+// --- Click Handlers (Trigger hidden inputs) ---
+
+/**
+ * Finds and clicks the hidden IMAGE file input.
+ */
+function uploadImagesClicked() { // Your existing function name
   console.log("Upload images button clicked");
-  
-  // Make sure we have a file input element
-  if (!fileInputElement) {
-    setupFileInput();
+  if (!imageFileInputElement) {
+    setupImageFileInput(); // Ensure it exists
   }
-  
-  // Trigger the file dialog
-  if (fileInputElement) {
-    fileInputElement.click();
+  if (imageFileInputElement) {
+    imageFileInputElement.click();
   } else {
-    console.error("Could not create file input element");
+    console.error("Could not create/find image file input element");
   }
 }
 
-// Initialize file input on page load
-function initializeFileInput() {
-  setupFileInput();
+/**
+ * Finds and clicks the hidden FONT file input.
+ */
+function uploadFontsClicked() { // NEW function name for clarity
+  console.log("Upload fonts button clicked");
+  if (!fontFileInputElement) {
+    setupFontFileInput(); // Ensure it exists
+  }
+  if (fontFileInputElement) {
+    fontFileInputElement.click();
+  } else {
+    console.error("Could not create/find font file input element");
+  }
 }
 
-// Function to save the current canvas as a PNG
+/**
+ * Initializes both hidden file input elements.
+ */
+function initializeFileInputs() { // Renamed
+  setupImageFileInput(); // Setup the image input
+  setupFontFileInput();  // Setup the font input
+}
+
+
+
+// --- PNG Saving Function (Keep your existing savePNG function as is) ---
 function savePNG() {
+    statusMessage='Saving Canvas PNG....';
     // Create a temporary graphics buffer
     let buffer = createGraphics(width, height);
-    if (!buffer) { 
-        console.error("Failed to create buffer for PNG saving."); 
-        return; 
-    }
-    buffer.pixelDensity(2); // Set same pixel density as main sketch
-    buffer.smooth(); // Enable antialiasing for sharper edges
-    buffer.clear();
+    if (!buffer) { console.error("Failed to create buffer for PNG saving."); return; }
+    buffer.pixelDensity(savingPixelDensity); // Keep your settings
+    buffer.smooth();
+    buffer.clear(); // Use clear for transparency
 
     // Redraw letters onto the buffer
     for (let letter of letters) {
-        // Set seed for consistent rendering
         randomSeed(letter.noiseSeed);
-        
-        // Call buffer-drawing function
-        drawLetterWithMaskOnBuffer(
+
+        // --- Determine fontToUse based on global fontType and letter ---
+        let fontToUse = null;
+        if (fontType === 'Built-in Fonts') {
+            fontToUse = letter.assignedExistingFont;
+        } else if (fontType === 'Uploaded Fonts') {
+            fontToUse = letter.assignedUploadedFont;
+        }
+
+        // --- Call buffer-drawing function WITH new params ---
+        drawLetterWithMaskOnBuffer( // Assuming this is the correct function name
             buffer,
             letter.character, letter.x, letter.y,
             letter.cellWidth, letter.cellHeight,
             letter.imageIndex, letter.imageSectionPos,
-            isInvertedMask
+            isInvertedMask,
+            // Pass font parameters
+            fontType,
+            fontToUse
         );
     }
 
-    // Generate timestamp for unique filename
     let timestamp = `${year()}${nf(month(), 2)}${nf(day(), 2)}_${nf(hour(), 2)}${nf(minute(), 2)}${nf(second(), 2)}`;
     let filename = `typocut_${timestamp}.png`;
-    
-    // Save the buffer
     save(buffer, filename);
     console.log("Saved PNG:", filename);
-    
-    // Remove the temporary buffer
     buffer.remove();
+  setTimeout(() => { 
+                statusMessage = ''; 
+                redraw();
+            }, 1300);
 }

@@ -2,58 +2,38 @@
 // Uses variables defined in Constants.js
 
 // --- Source Type Management ---
-function updateSourceTypeVisibility() {
-    console.log("Source type changed to:", sourceType);
-    
-    if (sourceType === 'Gradients') {
-        // Explicitly show gradient settings
-        if (gradientSettingsFolder) {
-            gradientSettingsFolder.show();
-        }
-        
-        // Switch to gradient images
-        sourceImages = [...gradientImages];
-        imageCount = sourceImages.length;
-        
-        console.log(`Switched to ${imageCount} gradient images`);
-    } else if (sourceType === 'Uploaded Files') {
-        // Explicitly hide gradient settings when using uploaded files
-        if (gradientSettingsFolder) {
-            gradientSettingsFolder.hide();
-        }
-        
-        // Check if we have uploaded images
-        if (uploadedImages.length > 0) {
-            // Switch to uploaded images
-            sourceImages = [...uploadedImages];
-            imageCount = sourceImages.length;
-            
-            console.log(`Switched to ${imageCount} uploaded images`);
-        } else {
-            // No uploaded images available
-            console.log("No uploaded images available, reverting to gradients");
-            sourceType = "Gradients";
-            
-            // Show gradient settings
-            if (gradientSettingsFolder) {
-                gradientSettingsFolder.show();
-            }
-            
-            // Switch back to gradient images
-            sourceImages = [...gradientImages];
-            imageCount = sourceImages.length;
-        }
+
+function updateSourceTypeOptions() {
+    const currentOptions = ['Gradients'];
+    if (uploadedImages.length > 0) {
+        currentOptions.push('Uploaded Images');
     }
-    
-    // Force letters to use only valid image indices when we randomize
-    randomizeLetterImages();
-    
-    // Update letters with the current image source
-    updateLetterObjects();
-    
-    // Force redraw
-    redraw();
+
+    if (!currentOptions.includes(sourceType)) {
+        sourceType = 'Gradients';
+    }
+
+    guiSourceController.options(currentOptions);
+    guiSourceController.setValue(sourceType);
 }
+
+
+function updateFontTypeDropdown() {
+    // Build current options
+    const currentOptions = ['Typocut Default','Built-in Fonts'];
+    if (uploadedFontCollection?.length) currentOptions.push('Uploaded Fonts');
+
+    // Reset fontType if needed
+    if (!currentOptions.includes(fontType)) {
+        fontType = 'Typocut Default';
+    }
+
+    // Update controller
+    guiFontController.options(currentOptions);
+    guiFontController.setValue(fontType); // Sync displayed value
+    
+}
+
 
 // Function to update text from GUI with character limit enforcement
 function updateTextFromGUI(value) {
@@ -109,6 +89,8 @@ function setupGUI() {
         lineSpacingFactor: lineSpacingFactor,
         isInvertedMask: isInvertedMask,
         uploadImages: uploadImagesClicked,
+        uploadFonts: uploadFontsClicked, 
+        fontType:fontType,
         sourceType: sourceType,
         randomize: randomizeLetterImagesAndUpdate,
         resetLayout: resetLetterLayout,
@@ -120,7 +102,12 @@ function setupGUI() {
     };
 
     // Top level controls
-    gui.add(guiSettings, 'uploadImages').name('Upload Images (<10, <2.5MB)');
+    gui.add(guiSettings, 'uploadImages')
+       .name('Upload Images (up to 10 x 2.5 MB)');
+  
+    gui.add(guiSettings, 'uploadFonts')
+       .name('Upload Fonts (up to 10 x 500 KB)');
+  
     
     // Text input with character count update and limit enforcement
     gui.add(guiSettings, 'text')
@@ -128,17 +115,43 @@ function setupGUI() {
         .onChange(value => {
             updateTextFromGUI(value);
         });
+  
+    guiFontController = gui.add({ fontType: 'Typocut Default' }, 'fontType', ['Typocut Default','Built-in Fonts'])
+                           .name('Fonts Used')
+                           .onChange(value => {
+                            fontType = value;
+                            updateLetterObjects();
+                            redraw();
+    });
+  
+   guiSourceController = gui.add({ sourceType: 'Gradients' }, 'sourceType', ['Gradients'])
+                            .name('Source Type')
+                            .onChange(value => {
+                                console.log("Source type changed to:", value);
+        
+        // 1. Handle visibility of gradient settings
+                                if (value === 'Gradients') {
+                                gradientSettingsFolder.show();
+                                sourceImages = [...gradientImages];
+                                console.log(`Switched to ${gradientImages.length} gradient images`);
+                                } else if (value === 'Uploaded Images') {
+                                gradientSettingsFolder.hide();
+                                if (uploadedImages.length > 0) {
+                                sourceImages = [...uploadedImages];
+                                console.log(`Switched to ${uploadedImages.length} uploaded images`);
+                                } else {
+                                console.log("No uploaded images - reverting to gradients");
+                                guiSourceController.setValue('Gradients'); // Auto-revert
+                                return;
+                                }
+                            }
+        imageCount = sourceImages.length;
+        randomizeLetterImages();
+        updateLetterObjects();
+        redraw();
+    });
+  
 
-    // Source Selection (initially hidden, shown after file upload)
-    sourceSelectionFolder = gui.addFolder('Source Selection');
-    sourceSelectionFolder.add(guiSettings, 'sourceType', ['Gradients', 'Uploaded Files'])
-        .name('Source Type')
-        .onChange(value => {
-            console.log(`Switching source type to: ${value}`);
-            sourceType = value;
-            updateSourceTypeVisibility();
-        });
-    sourceSelectionFolder.hide(); // Initially hidden
 
     // Gradient Settings (shown when Gradients is selected)
     gradientSettingsFolder = gui.addFolder('Gradient Settings');
@@ -222,6 +235,7 @@ function setupGUI() {
             redraw(); // Update visual style
         });
 
+    
     // Image Controls
     const imageFolder = gui.addFolder('Image Controls');
     imageFolder.add(guiSettings, 'randomize').name('Randomize Images');
@@ -232,15 +246,12 @@ function setupGUI() {
     exportFolder.add(guiSettings, 'savePNG').name('Save as PNG');
     exportFolder.add(guiSettings, 'previewStickerSheet').name('Preview A4 Sticker Sheet');
     exportFolder.add(guiSettings, 'saveStickerSheet').name('Save A4 Sticker Sheet');
-
-    // Set initial visibility for source options
-    updateSourceTypeVisibility();
     
     // Add Stats folder last (at the bottom of the GUI)
     const statsFolder = gui.addFolder('Canvas Statistics');
     statsFolder.add(characterStats, 'currentCount').name('Inputted Symbols').disable().listen();
     statsFolder.add(characterStats, 'maxPossible').name('Max Possible Symbols').disable().listen();
     
-    // Initialize character stats
+    // Initialize all the default choices for the things
     updateCharacterStats();
 }

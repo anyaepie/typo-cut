@@ -23,6 +23,19 @@ class LetterObject {
         
         this.imageSectionPos = [0, 0]; // Stores [x, y] for image crop
         this.textPosition = -1; // Original index in inputText string
+      
+        // This is new section for the fonts - one for the existing font random assignment
+        // another one for the future - if I'll have time to upload the fonts
+        this.assignedExistingFont = null; // Will hold a p5.Font object or null
+        this.assignedUploadedFont = null; // Will hold a p5.Font object or null (for future)
+        let randomIndex = floor(random(existingFontCollection.length));
+        this.assignedExistingFont = existingFontCollection[randomIndex].font;
+        
+        if (uploadedFontCollection !== 'undefined'&& uploadedFontCollection.length > 0) {
+        let randomIndex = floor(random(uploadedFontCollection.length));
+        this.assignedUploadedFont = uploadedFontCollection[randomIndex].font;
+        console.log("Assigned font is",this.assignedUploadedFont);
+        }
         
         // Calculate initial image crop position
         this.updateImageSectionPos();
@@ -117,6 +130,16 @@ class LetterObject {
 
         // This ensures consistent random numbers for this letter's drawing operations this frame
         randomSeed(this.noiseSeed);
+      
+        let fontToUse = null;
+        if (fontType === 'Built-in Fonts') {
+        // Directly use the pre-assigned font
+        fontToUse = this.assignedExistingFont;
+        // We assume assignedExistingFont is valid if fontType can be 'Existing'
+        } else if (fontType === 'Uploaded Fonts') {
+        fontToUse = this.assignedUploadedFont; // Future logic
+        }
+        // If fontType is 'Typocut', fontToUse remains null      
 
         // Call the masking/drawing function (defined in LetterRendering.js)
         drawLetterWithMask(
@@ -124,10 +147,11 @@ class LetterObject {
             this.cellWidth, this.cellHeight,
             this.imageIndex,
             this.imageSectionPos,
-            isInvertedMask // Global variable from sketch.js
+            isInvertedMask, // Global variable
+            fontType,      // Global mode
+            fontToUse 
         );
     }
-
     // Update the letter's top-left position
     moveTo(newX, newY) {
         this.x = newX;
